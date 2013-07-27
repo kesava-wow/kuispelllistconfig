@@ -2,7 +2,7 @@
 ## Author: Kesava
 ## Title: |cff9900ffKui|r SpellList Config
 ## Notes: Customise the whitelist used by Kui_Nameplates_Auras
-## Dependencies: Kui_Nameplates, Kui_Nameplates_Auras
+## OptionalDeps: Kui_Nameplates_Auras
 ## SavedVariables: KuiSpellListCustom
 
 main.lua
