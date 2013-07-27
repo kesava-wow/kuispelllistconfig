@@ -1,0 +1,10 @@
+manual-changelog:
+    filename: changelog
+    markup-type: creole
+
+enable-nolib-creation:
+    no
+
+ignore:
+    - .gitignore
+	- changelog
