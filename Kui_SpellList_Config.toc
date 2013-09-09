@@ -1,4 +1,4 @@
-## Interface: 50300
+## Interface: 50400
 ## Author: Kesava
 ## Title: |cff9900ffKui|r SpellList Config
 ## Notes: Customise the whitelist used by Kui_Nameplates_Auras
