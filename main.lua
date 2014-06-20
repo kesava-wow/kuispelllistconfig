@@ -14,7 +14,7 @@ local whitelist = {}
 local class -- the currently selected class
 local spellFrames = {}
 local classes = {
-	'DRUID', 'HUNTER', 'MAGE', 'DEATHKNIGHT', 'WARRIOR', 'PALADIN',
+	'GlobalSelf', 'DRUID', 'HUNTER', 'MAGE', 'DEATHKNIGHT', 'WARRIOR', 'PALADIN',
 	'WARLOCK', 'SHAMAN', 'PRIEST', 'ROGUE', 'MONK'
 }
 
@@ -356,7 +356,7 @@ local function ClassUpdate()
 
 	UIDropDownMenu_SetText(classDropDown, class)
 
-	whitelist.default = spelllist.GetDefaultSpells(class)
+	whitelist.default = spelllist.GetDefaultSpells(class, true)
 	whitelist.custom  = {}
 
 	-- merge ignored spells with default list
