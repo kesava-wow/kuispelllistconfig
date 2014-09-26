@@ -169,7 +169,8 @@ local function SpellFrameOnEnter(self)
 	self.highlight:Show()
 
 	if self.link then
-		GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT')
+		GameTooltip:SetOwner(self, 'ANCHOR_NONE')
+		GameTooltip:SetPoint('BOTTOMRIGHT',self,'BOTTOMLEFT',0,-2)
 		GameTooltip:SetHyperlink(self.link)
 		GameTooltip:Show()
 	end

@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Author: Kesava
-## Title: |cff9900ffKui|r SpellList Config
+## Title: Kui |cff9966ffSpellList Config|r
 ## Notes: Customise the whitelist used by Kui_Nameplates_Auras
 ## OptionalDeps: Kui_Nameplates_Auras
 ## SavedVariables: KuiSpellListCustom
