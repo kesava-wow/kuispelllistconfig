@@ -46,7 +46,6 @@ local function UnignoreSpellID(spellid)
 	KuiSpellListCustom.Ignore[class][spellid] = nil
 	f.UpdateDisplay()
 end
-
 ------------------------------------------------------------- create category --
 local opt = CreateFrame('Frame', 'KuiSpellListConfig', InterfaceOptionsFramePanelContainer)
 opt:Hide()
@@ -122,17 +121,25 @@ spellEntryBox:SetAutoFocus(false)
 spellEntryBox:EnableMouse(true)
 spellEntryBox:SetMaxLetters(100)
 spellEntryBox:SetPoint('TOPLEFT', defaultSpellListScroll, 'BOTTOMLEFT', 125, -10)
-spellEntryBox:SetSize(284, 25)
+spellEntryBox:SetSize(254, 25)
 
 -- spell add button
 local spellAddButton = CreateFrame('Button', 'KuiSpellListConfigSpellAddButton', opt, 'UIPanelButtonTemplate')
 spellAddButton:SetText('Add')
 spellAddButton:SetPoint('LEFT', spellEntryBox, 'RIGHT')
-spellAddButton:SetSize(50, 25)
+spellAddButton:SetSize(40,25)
+spellAddButton.tooltipText = "Resolve this name to the ID of a spell in your spellbook and add it to the tracked list.\nThis is the default behaviour when the entry text is |cff88ff88green|r."
+
+-- add by name button
+local spellAddByNameButton = CreateFrame('Button', 'KuiSpellListConfigSpellAddByNameButton', opt, 'UIPanelButtonTemplate')
+spellAddByNameButton:SetText('Verbatim')
+spellAddByNameButton:SetPoint('LEFT', spellAddButton, 'RIGHT')
+spellAddByNameButton:SetSize(60,25)
+spellAddByNameButton.tooltipText = "Add this spell without trying to resolve it to its ID. In other words, track any aura which matches this name.\nThis is the default behaviour when the entry text is |cffff8888red|r. Hold shift while pressing enter to force this action."
 
 -- help text
 local helpText = opt:CreateFontString(nil, 'ARTWORK', 'GameFontHighlight')
-helpText:SetText('Type the name OR ID of an ability to track and press enter.\nRight click spells to remove or ignore them.\n\nAbilities will only be recognised by name if they are in your currently active set of skills (i.e. visible and active in your specialisation\'s page of your spell book). You can use a website such as Wowhead to find spell IDs.\n\nIf, when typing the name of an ability, the text turns |cff88ff88green|r, this means the ability will be tracked by its ID and its icon and tooltip will be displayed in the list when added.\nIf the text stays |cffff8888red|r, the ability will be tracked by its name and will not be converted to an ID.')
+helpText:SetText('Type the |cffffff88name|r or |cffffff88spell ID|r of an ability to track and press enter.\nRight click spells to remove or ignore them.\n\nAbilities will only be recognised by name if they are in your currently active set of skills (i.e. visible and active in your specialisation\'s page of your spell book). You can use a website such as Wowhead to find spell IDs.\n\nMouseover the "Add" and "Verbatim" buttons for more detail about what each of them does.')
 helpText:SetPoint('TOPLEFT', defaultSpellListBg, 'BOTTOMLEFT', 0, -30)
 helpText:SetPoint('BOTTOMRIGHT', -10, 0)
 helpText:SetWordWrap(true)
@@ -165,6 +172,20 @@ UIDropDownMenu_Initialize(classDropDown, function(self, level, menuList)
 end)
 
 ----------------------------------------------------- element script handlers --
+-- tooltip functions
+local function ButtonTooltip(button)
+	if not button.tooltipText then return end
+
+	GameTooltip:SetOwner(button, 'ANCHOR_TOPLEFT')
+	GameTooltip:SetWidth(200)
+	GameTooltip:AddLine(button:GetText())
+	GameTooltip:AddLine(button.tooltipText, 1,1,1,true)
+	GameTooltip:Show()
+end
+local function ButtonTooltipHide(button)
+	GameTooltip:Hide()
+end
+
 local function SpellFrameOnEnter(self)
 	self.highlight:Show()
 
@@ -199,6 +220,18 @@ local function SpellFrameOnMouseUp(self, button)
 	end
 end
 
+local function ClearSpellEntryBox()
+	spellEntryBox:SetText('')
+	spellEntryBox:SetTextColor(1,1,1)
+	spellEntryBox:SetFocus()
+end
+
+local function SpellAddByNameButtonOnClick(self)
+	-- just add the text itself
+	AddSpellByName(spellEntryBox:GetText())
+	ClearSpellEntryBox()
+end
+
 local function SpellAddButtonOnClick(self)
 	if spellEntryBox.spellID then
 		AddSpellByID(spellEntryBox.spellID)
@@ -206,13 +239,15 @@ local function SpellAddButtonOnClick(self)
 		AddSpellByName(spellEntryBox:GetText())
 	end
 
-	spellEntryBox:SetText('')
-	spellEntryBox:SetTextColor(1,1,1)
-	spellEntryBox:SetFocus()
+	ClearSpellEntryBox()
 end
 
 local function SpellEntryBoxOnEnterPressed(self)
-	spellAddButton:Click()
+	if IsShiftKeyDown() then
+		spellAddByNameButton:Click()
+	else
+		spellAddButton:Click()
+	end
 end
 
 local function SpellEntryBoxOnEscapePressed(self)
@@ -264,18 +299,27 @@ local function ClassResetButtonOnClick(self)
 end
 
 ------------------------------------------------------------------- functions --
--- creates frame for spells (icon + name + delete button)
+-- creates frame for spells (icon + name + id)
 local function CreateSpellFrame(spellid, default, ignored)
-	local name,_,icon = GetSpellInfo(spellid)
-	local f
+	local name,icon,f,_
+
+	if string.match(spellid, "^%d+$") then
+		-- spellid is actually an ID, not a string
+		name,_,icon = GetSpellInfo(spellid)
+	end
 
 	if not name then
+		-- either the spell id doesn't exist or spellid is a spell name
 		name = spellid
 		icon = 'Interface/ICONS/INV_Misc_QuestionMark'
+	else
+		-- show the ID, mostly for my sake
+		name = name..' |cff888888('..spellid..')|r'
 	end
 
 	for _,frame in pairs(spellFrames) do
 		if not frame:IsShown() then
+			-- recycle an old frame
 			f = frame
 		end
 	end
@@ -314,6 +358,8 @@ local function CreateSpellFrame(spellid, default, ignored)
 	end
 
 	f.ignored = nil
+	f.link = nil
+	f.id = spellid
 	f.name:SetTextColor(1, 1, 1)
 	f.icon:SetAlpha(1)
 
@@ -331,8 +377,10 @@ local function CreateSpellFrame(spellid, default, ignored)
 		f:SetScript('OnMouseUp', SpellFrameOnMouseUp)
 	end
 
-	f.id = spellid
-	f.link = GetSpellLink(spellid)
+	if string.match(spellid, "^%d+$") then
+		-- only get links for spell ids - not verbatim text entries
+		f.link = GetSpellLink(spellid)
+	end
 
 	f.icon:SetTexture(icon)
 	f.name:SetText(name)
@@ -448,7 +496,13 @@ spellEntryBox:SetScript('OnEnterPressed', SpellEntryBoxOnEnterPressed)
 spellEntryBox:SetScript('OnEscapePressed', SpellEntryBoxOnEscapePressed)
 spellEntryBox:SetScript('OnTextChanged', SpellEntryBoxOnTextChanged)
 
-spellAddButton:SetScript('OnClick', SpellAddButtonOnClick)
+spellAddButton:SetScript('OnClick',SpellAddButtonOnClick)
+spellAddButton:SetScript('OnEnter',ButtonTooltip)
+spellAddButton:SetScript('OnLeave',ButtonTooltipHide)
+
+spellAddByNameButton:SetScript('OnClick',SpellAddByNameButtonOnClick)
+spellAddByNameButton:SetScript('OnEnter',ButtonTooltip)
+spellAddByNameButton:SetScript('OnLeave',ButtonTooltipHide)
 
 classResetButton:SetScript('OnClick', ClassResetButtonOnClick)
 
