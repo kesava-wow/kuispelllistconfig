@@ -398,6 +398,32 @@ local function HideAllSpellFrames()
 	end
 end
 
+-- iterate through given spell list by name 
+-- where spelllist { [spellid] => [ignored], ... }
+local function PairsBySpellName(whitelist)
+	local name_list = {}
+
+	local spellid,ignored
+	for spellid,ignored in pairs(whitelist) do
+		local name = GetSpellInfo(spellid)
+		tinsert(name_list, { name or spellid, spellid, ignored })
+	end
+
+	table.sort(name_list, function(a,b)
+		return a[1] < b[1]
+	end)
+
+	local i = 0
+	return function()
+		i = i + 1
+		if name_list[i] == nil then
+			return nil
+		else
+			return name_list[i][2], name_list[i][3]
+		end
+	end
+end
+
 -- called upon load or when a different class is selected
 local function ClassUpdate()
 	local pv
@@ -425,7 +451,7 @@ local function ClassUpdate()
 	end
 
 	-- print default spells
-	for spellid,ignored in pairs(whitelist.default) do
+	for spellid,ignored in PairsBySpellName(whitelist.default) do
 		local f = CreateSpellFrame(spellid, true, (ignored == 2))
 
 		if pv then
@@ -440,7 +466,7 @@ local function ClassUpdate()
 
 	-- print custom spells
 	pv = nil
-	for spellid,_ in pairs(whitelist.custom) do
+	for spellid,_ in PairsBySpellName(whitelist.custom) do
 		local f = CreateSpellFrame(spellid)
 
 		if pv then
