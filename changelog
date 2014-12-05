@@ -1,5 +1,1 @@
-* bump toc to 60000
-* add capability to track a spell by its name rather than its ID ("verbatim")
-* add tooltips to "Add" and "Verbatim" buttons
-* add spell id text string to spell lists
-* fix issue where spell tooltips in the custom list would sometimes be incorrect
+* fix type error that could occur when sorting a whitelist with a broken spell

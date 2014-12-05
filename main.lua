@@ -406,7 +406,7 @@ local function PairsBySpellName(whitelist)
 	local spellid,ignored
 	for spellid,ignored in pairs(whitelist) do
 		local name = GetSpellInfo(spellid)
-		tinsert(name_list, { name or spellid, spellid, ignored })
+		tinsert(name_list, { name or tostring(spellid), spellid, ignored })
 	end
 
 	table.sort(name_list, function(a,b)
