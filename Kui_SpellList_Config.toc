@@ -1,8 +1,10 @@
 ## Interface: 60100
 ## Author: Kesava
 ## Title: Kui |cff9966ffSpellList Config|r
-## Notes: Customise the whitelist used by Kui_Nameplates_Auras
-## OptionalDeps: Kui_Nameplates_Auras
+## Notes: Customise the spell list used by Kui addons
 ## SavedVariables: KuiSpellListCustom
+
+lib/LibStub.lua
+lib/KuiSpellList.lua
 
 main.lua
