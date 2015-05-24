@@ -14,7 +14,7 @@ local whitelist = {}
 local class -- the currently selected class
 local spellFrames = {}
 local classes = {
-	'GlobalSelf', 'DRUID', 'HUNTER', 'MAGE', 'DEATHKNIGHT', 'WARRIOR', 'PALADIN',
+	'GLOBAL', 'DRUID', 'HUNTER', 'MAGE', 'DEATHKNIGHT', 'WARRIOR', 'PALADIN',
 	'WARLOCK', 'SHAMAN', 'PRIEST', 'ROGUE', 'MONK'
 }
 
@@ -148,9 +148,9 @@ helpText:SetJustifyV('TOP')
 
 --[[ Omitted:
 	Note that although most de/buffs have the same name and ID as their parent ability (the ability that you use to cause it), some do not. For example, if an ability causes more than one effect at the same time, then those effects will use different IDs and only the primary effect will be tracked.
-	
+
 	For this reason, you may choose to track abilities purely by name by unchecking the 'Search spellbook' option. This prevents the name of the ability being verified and converted when you add it.
-	
+
 	Additions to this list are saved on a class-by-class basis."
 ]]
 --------------------------------------------------- class drop down functions --
@@ -257,7 +257,7 @@ end
 local function SpellEntryBoxOnTextChanged(self, user)
 	self.spellID = nil
 	if not user then return end
-	
+
 	local text = self:GetText()
 
 	if text == '' then
@@ -328,7 +328,7 @@ local function CreateSpellFrame(spellid, default, ignored)
 		f = CreateFrame('Frame', nil, default and
 			defaultSpellListFrame or
 			customSpellListFrame)
-		
+
 		f:EnableMouse(true)
 
 		f.highlight = f:CreateTexture('HIGHLIGHT')
@@ -370,7 +370,7 @@ local function CreateSpellFrame(spellid, default, ignored)
 		if ignored then
 			f.ignored = true
 			f.name:SetTextColor(.6, .6, .6)
-			f.icon:SetAlpha(.6)	
+			f.icon:SetAlpha(.6)
 		end
 	else
 		f:SetParent(customSpellListFrame)
@@ -398,7 +398,7 @@ local function HideAllSpellFrames()
 	end
 end
 
--- iterate through given spell list by name 
+-- iterate through given spell list by name
 -- where spelllist { [spellid] => [ignored], ... }
 local function PairsBySpellName(whitelist)
 	local name_list = {}
@@ -541,6 +541,18 @@ SLASH_KUISPELLLIST1 = '/kuislc'
 SLASH_KUISPELLLIST2 = '/kslc'
 
 function SlashCmdList.KUISPELLLIST(msg)
-	InterfaceOptionsFrame_OpenToCategory(category)
-	InterfaceOptionsFrame_OpenToCategory(category)
+    if msg == 'dump' then
+        -- dump list of auras on target
+        local f = UnitIsFriend('player','target') and 'HELPFUL' or 'HARMFUL'
+
+        for i=1,40 do
+            local n,_,_,_,_,_,_,_,_,_,id = UnitAura('target',i,f..' PLAYER')
+            if n and id then
+                print('KSLC: '..n..' = '..id)
+            end
+        end
+    else
+        InterfaceOptionsFrame_OpenToCategory(category)
+        InterfaceOptionsFrame_OpenToCategory(category)
+    end
 end
