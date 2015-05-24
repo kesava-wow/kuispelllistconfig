@@ -209,8 +209,10 @@ local auras = {
             [853] = true,    -- hammer of justice
             [10326] = true,  -- turn evil
             [20066] = true,  -- repentance
+            [20170] = true,  -- seal of justice slow
             [31935] = true,  -- avenger's shield silence
             [62124] = true,  -- reckoning taunt
+            [105421] = true, -- blinding light
             [105593] = true, -- fist of justice
             [119072] = true, -- holy wrath stun
         },
@@ -381,6 +383,7 @@ local auras = {
             [69179] = true,
             [80483] = true,
             [129597] = true,
+            [155145] = true,
             [20549] = true, -- war stomp
             [107079] = true, -- quaking palm
         }
