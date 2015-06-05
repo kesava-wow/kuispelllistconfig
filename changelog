@@ -1,1 +1,2 @@
 * update for new spell list code - the only noticable difference should be GlobalSelf becoming GLOBAL
+* add slash command /kslc dump for finding spell ids
