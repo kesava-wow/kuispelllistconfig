@@ -1,4 +1,4 @@
-local MAJOR, MINOR = 'KuiSpellList-1.0', 11
+local MAJOR, MINOR = 'KuiSpellList-1.0', 12
 local KuiSpellList = LibStub:NewLibrary(MAJOR, MINOR)
 local _
 
@@ -59,7 +59,6 @@ local auras = {
     HUNTER = {
         HELPFUL = {
             [34477] = true, -- misdirection
-            [172106] = true, -- aspect of the fox
             [13159] = true, -- aspect of the pack
         },
         HARMFUL = {
@@ -280,6 +279,7 @@ local auras = {
         HELPFUL = {
             [17] = true,     -- power word: shield
             [21562] = true,  -- power word: fortitude
+            [81782] = true,  -- power word: barrier
             [139] = true,    -- renew
             [6346] = true,   -- fear ward
             [33206] = true,  -- pain suppression
