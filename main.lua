@@ -18,6 +18,19 @@ local classes = {
 	'WARLOCK', 'SHAMAN', 'PRIEST', 'ROGUE', 'MONK'
 }
 
+if AddonLoader and AddonLoader.RemoveInterfaceOptions then
+    -- remove AddonLoader's fake category
+    AddonLoader:RemoveInterfaceOptions(category)
+
+    -- and nil its slash commands
+    SLASH_KUISLC1 = nil
+    SLASH_KSLC1 = nil
+    SlashCmdList.KUISLC = nil
+    SlashCmdList.KSLC = nil
+    hash_SlashCmdList["/kuislc"] = nil
+    hash_SlashCmdList["/kslc"] = nil
+end
+
 ------------------------------------------------- whitelist control functions --
 local function RemoveAddedSpell(spellid)
 	KuiSpellListCustom.Classes[class] = KuiSpellListCustom.Classes[class] or {}

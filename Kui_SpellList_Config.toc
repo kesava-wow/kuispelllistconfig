@@ -3,6 +3,9 @@
 ## Title: Kui |cff9966ffSpellList Config|r
 ## Notes: Customise the spell list used by Kui addons
 ## SavedVariables: KuiSpellListCustom
+## LoadManagers: AddonLoader
+## X-LoadOn-Slash: /kslc, /kuislc
+## X-LoadOn-InterfaceOptions: Kui Spell List
 
 lib/LibStub.lua
 lib/KuiSpellList.lua
