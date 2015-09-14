@@ -1,2 +1,1 @@
-* made the addon load on demand (requires AddonLoader)
-* update whitelist
+* interface now supports a resizable options frame (e.g. BetterBlizzOptions)

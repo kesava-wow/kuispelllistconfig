@@ -134,7 +134,7 @@ spellEntryBox:SetAutoFocus(false)
 spellEntryBox:EnableMouse(true)
 spellEntryBox:SetMaxLetters(100)
 spellEntryBox:SetPoint('TOPLEFT', defaultSpellListScroll, 'BOTTOMLEFT', 125, -10)
-spellEntryBox:SetSize(254, 25)
+spellEntryBox:SetSize(250, 25)
 
 -- spell add button
 local spellAddButton = CreateFrame('Button', 'KuiSpellListConfigSpellAddButton', opt, 'UIPanelButtonTemplate')
@@ -159,13 +159,20 @@ helpText:SetWordWrap(true)
 helpText:SetJustifyH('LEFT')
 helpText:SetJustifyV('TOP')
 
---[[ Omitted:
-    Note that although most de/buffs have the same name and ID as their parent ability (the ability that you use to cause it), some do not. For example, if an ability causes more than one effect at the same time, then those effects will use different IDs and only the primary effect will be tracked.
+-- position/size elements ######################################################
+local function FrameSizeChanged(self)
+    local width = self:GetWidth()
+    local list_width = width / 2 - 53
 
-    For this reason, you may choose to track abilities purely by name by unchecking the 'Search spellbook' option. This prevents the name of the ability being verified and converted when you add it.
+    defaultSpellListFrame:SetWidth(list_width)
+    defaultSpellListScroll:SetWidth(list_width)
 
-    Additions to this list are saved on a class-by-class basis."
-]]
+    customSpellListFrame:SetWidth(list_width)
+    customSpellListScroll:SetWidth(list_width)
+
+    spellEntryBox:SetPoint('TOPLEFT', defaultSpellListScroll, 'BOTTOMLEFT', (width / 2) - 175, -10)
+end
+
 --------------------------------------------------- class drop down functions --
 local function ClassDropDownChanged(self, val)
     class = val
@@ -524,6 +531,9 @@ function f:ADDON_LOADED(loaded)
     self.UpdateDisplay = function()
         ClassUpdate()
     end
+
+    InterfaceOptionsFramePanelContainer:HookScript('OnSizeChanged', FrameSizeChanged)
+    FrameSizeChanged(InterfaceOptionsFramePanelContainer)
 
     spelllist.WhitelistChanged()
 end
