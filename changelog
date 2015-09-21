@@ -1,1 +1,2 @@
 * interface now supports a resizable options frame (e.g. BetterBlizzOptions)
+* fix issue where the category doesn't correctly populate upon first load
