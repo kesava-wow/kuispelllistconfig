@@ -4,7 +4,7 @@
 -- All rights reserved
 ]]
 local addon,ns = ...
-local category = 'Kui Spell List'
+local category = 'Kui |cff9966ffSpell List|r'
 local spelllist = LibStub('KuiSpellList-1.0')
 local f = CreateFrame('Frame')
 f.UpdateDisplay = {}
@@ -555,10 +555,10 @@ spellAddByNameButton:SetScript('OnLeave',ButtonTooltipHide)
 
 classResetButton:SetScript('OnClick', ClassResetButtonOnClick)
 
-InterfaceOptions_AddCategory(opt)
-
 f:SetScript('OnEvent', OnEvent)
 f:RegisterEvent('ADDON_LOADED')
+
+InterfaceOptions_AddCategory(opt)
 --------------------------------------------------------------- slash command --
 SLASH_KUISPELLLIST1 = '/kuislc'
 SLASH_KUISPELLLIST2 = '/kslc'

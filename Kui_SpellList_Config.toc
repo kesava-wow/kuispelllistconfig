@@ -5,7 +5,7 @@
 ## SavedVariables: KuiSpellListCustom
 ## LoadManagers: AddonLoader
 ## X-LoadOn-Slash: /kslc, /kuislc
-## X-LoadOn-InterfaceOptions: Kui Spell List
+## X-LoadOn-InterfaceOptions: Kui |cff9966ffSpell List|r
 
 lib/LibStub.lua
 lib/KuiSpellList.lua
