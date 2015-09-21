@@ -561,13 +561,15 @@ f:RegisterEvent('ADDON_LOADED')
 InterfaceOptions_AddCategory(opt)
 
 -- 6.2.2: workaround for the category not populating correctly OnClick
-local lastFrame = InterfaceOptionsFrame.lastFrame
-InterfaceOptionsFrame.lastFrame = nil
-InterfaceOptionsFrame_Show()
-InterfaceOptionsFrame_OpenToCategory(category)
-InterfaceOptionsFrame_OpenToCategory(category)
-InterfaceOptionsFrame.lastFrame = lastFrame
-lastFrame = nil
+if AddonLoader and AddonLoader.RemoveInterfaceOptions then
+    local lastFrame = InterfaceOptionsFrame.lastFrame
+    InterfaceOptionsFrame.lastFrame = nil
+    InterfaceOptionsFrame_Show()
+    InterfaceOptionsFrame_OpenToCategory(category)
+    InterfaceOptionsFrame_OpenToCategory(category)
+    InterfaceOptionsFrame.lastFrame = lastFrame
+    lastFrame = nil
+end
 --------------------------------------------------------------- slash command --
 SLASH_KUISPELLLIST1 = '/kuislc'
 SLASH_KUISPELLLIST2 = '/kslc'
