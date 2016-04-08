@@ -179,7 +179,7 @@ local function ClassDropDownChanged(self, val)
     f.UpdateDisplay()
 end
 
-UIDropDownMenu_Initialize(classDropDown, function(self, level, menuList)
+function classDropDown:initialize(level,menuList)
     local info = UIDropDownMenu_CreateInfo()
 
     for _,thisClass in pairs(classes) do
@@ -189,7 +189,7 @@ UIDropDownMenu_Initialize(classDropDown, function(self, level, menuList)
         info.func = ClassDropDownChanged
         UIDropDownMenu_AddButton(info)
     end
-end)
+end
 
 ----------------------------------------------------- element script handlers --
 -- tooltip functions
