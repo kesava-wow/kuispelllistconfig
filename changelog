@@ -1,3 +1,1 @@
-* interface now supports a resizable options frame (e.g. BetterBlizzOptions)
-* fix issue where the category doesn't correctly populate upon first load
-* colourise the category name. because it's pretty.
+* fix unit frame taint due to use of UIDropDownMenu
