@@ -6,6 +6,7 @@
 local addon,ns = ...
 local category = 'Kui |cff9966ffSpell List|r'
 local spelllist = LibStub('KuiSpellList-1.0')
+local pcdd = LibStub('PhanxConfig-Dropdown')
 local f = CreateFrame('Frame')
 f.UpdateDisplay = {}
 
@@ -15,21 +16,8 @@ local class -- the currently selected class
 local spellFrames = {}
 local classes = {
     'GLOBAL', 'DRUID', 'HUNTER', 'MAGE', 'DEATHKNIGHT', 'WARRIOR', 'PALADIN',
-    'WARLOCK', 'SHAMAN', 'PRIEST', 'ROGUE', 'MONK'
+    'WARLOCK', 'SHAMAN', 'PRIEST', 'ROGUE', 'MONK', 'DEMONHUNTER'
 }
-
-if AddonLoader and AddonLoader.RemoveInterfaceOptions then
-    -- remove AddonLoader's fake category
-    AddonLoader:RemoveInterfaceOptions(category)
-
-    -- and nil its slash commands
-    SLASH_KUISLC1 = nil
-    SLASH_KSLC1 = nil
-    SlashCmdList.KUISLC = nil
-    SlashCmdList.KSLC = nil
-    hash_SlashCmdList["/kuislc"] = nil
-    hash_SlashCmdList["/kslc"] = nil
-end
 
 ------------------------------------------------- whitelist control functions --
 local function RemoveAddedSpell(spellid)
@@ -66,9 +54,11 @@ opt.name = category
 
 ------------------------------------------------------------- create elements --
 -- class drop down menu
-local classDropDown = CreateFrame('Frame', 'KuiSpellListConfigClassDropDown', opt, 'UIDropDownMenuTemplate')
-classDropDown:SetPoint('TOPLEFT', 0, -10)
-UIDropDownMenu_SetWidth(classDropDown, 150)
+local classDropDown = pcdd:New(opt,'Class')
+classDropDown:SetPoint('TOPLEFT', 10, -20)
+classDropDown:SetFrameStrata('TOOLTIP')
+classDropDown:SetHeight(20)
+classDropDown.labelText:Hide()
 
 -- reset spells for class button
 local classResetButton = CreateFrame('Button', 'KuiSpellListConfigClassResetButton', opt, 'UIPanelButtonTemplate')
@@ -174,23 +164,23 @@ local function FrameSizeChanged(self)
 end
 
 --------------------------------------------------- class drop down functions --
-local function ClassDropDownChanged(self, val)
-    class = val
-    f.UpdateDisplay()
-end
-
-function classDropDown:initialize(level,menuList)
-    local info = UIDropDownMenu_CreateInfo()
+function classDropDown:initialize()
+    local list = {}
 
     for _,thisClass in pairs(classes) do
-        info.text = thisClass
-        info.arg1 = thisClass
-        info.checked = (class == thisClass)
-        info.func = ClassDropDownChanged
-        UIDropDownMenu_AddButton(info)
+        tinsert(list,{
+            text = thisClass,
+            selected = thisClass == class
+        })
     end
-end
 
+    self:SetList(list)
+    self:SetValue(class)
+end
+function classDropDown:OnValueChanged(val,text)
+    class = text
+    f.UpdateDisplay()
+end
 ----------------------------------------------------- element script handlers --
 -- tooltip functions
 local function ButtonTooltip(button)
@@ -285,24 +275,23 @@ local function SpellEntryBoxOnTextChanged(self, user)
         return
     end
 
-    local usedID, name
-
+    local usedID
     if strmatch(text, '^%d+$') then
-        -- using a spell ID
+        -- typing a spell ID
         text = tonumber(text)
         usedID = true
     end
 
-    name = GetSpellInfo(text)
+    local spellID = select(7,GetSpellInfo(text))
 
-    if name then
+    if spellID then
+        -- spell exists in spellbook
         self:SetTextColor(0, 1, 0)
 
-        if not usedID then
-            -- get the spell ID from the link
-            self.spellID = strmatch(GetSpellLink(name), ':(%d+).h')
-        else
+        if usedID then
             self.spellID = text
+        else
+            self.spellID = spellID
         end
 
         self.spellID = tonumber(self.spellID)
@@ -449,7 +438,7 @@ local function ClassUpdate()
     local pv
     HideAllSpellFrames()
 
-    UIDropDownMenu_SetText(classDropDown, class)
+    classDropDown:initialize()
 
     whitelist.default = spelllist.GetDefaultSpells(class, true)
     whitelist.custom  = {}
@@ -559,17 +548,6 @@ f:SetScript('OnEvent', OnEvent)
 f:RegisterEvent('ADDON_LOADED')
 
 InterfaceOptions_AddCategory(opt)
-
--- 6.2.2: workaround for the category not populating correctly OnClick
-if AddonLoader and AddonLoader.RemoveInterfaceOptions then
-    local lastFrame = InterfaceOptionsFrame.lastFrame
-    InterfaceOptionsFrame.lastFrame = nil
-    InterfaceOptionsFrame_Show()
-    InterfaceOptionsFrame_OpenToCategory(category)
-    InterfaceOptionsFrame_OpenToCategory(category)
-    InterfaceOptionsFrame.lastFrame = lastFrame
-    lastFrame = nil
-end
 --------------------------------------------------------------- slash command --
 SLASH_KUISPELLLIST1 = '/kuislc'
 SLASH_KUISPELLLIST2 = '/kslc'
