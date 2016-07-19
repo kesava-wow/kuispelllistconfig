@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 70000
 ## Author: Kesava
 ## Title: Kui |cff9966ffSpellList Config|r
 ## Notes: Customise the spell list used by Kui addons
