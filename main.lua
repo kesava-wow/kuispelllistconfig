@@ -143,7 +143,7 @@ spellAddByNameButton.tooltipText = "Add this spell without trying to resolve it 
 -- help text
 local helpText = opt:CreateFontString(nil, 'ARTWORK', 'GameFontHighlight')
 helpText:SetText('Type the |cffffff88name|r or |cffffff88spell ID|r of an ability to track and press enter.\nRight click spells to remove or ignore them.\n\nAbilities will only be recognised by name if they are in your currently active set of skills (i.e. visible and active in your specialisation\'s page of your spell book). You can use the slash command |cffffff88/kslc dump|r to find spell IDs of auras once you have applied them to your target.\n\nMouseover the "Add" and "Verbatim" buttons for more detail about what each of them does.')
-helpText:SetPoint('TOPLEFT', defaultSpellListBg, 'BOTTOMLEFT', 0, -30)
+helpText:SetPoint('TOPLEFT', defaultSpellListBg, 'BOTTOMLEFT', 0, -40)
 helpText:SetPoint('BOTTOMRIGHT', -10, 0)
 helpText:SetWordWrap(true)
 helpText:SetJustifyH('LEFT')
