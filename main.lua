@@ -84,8 +84,8 @@ defaultSpellListBg:SetBackdrop({
 })
 defaultSpellListBg:SetBackdropColor(.1, .1, .1, .3)
 defaultSpellListBg:SetBackdropBorderColor(.5, .5, .5)
-defaultSpellListBg:SetPoint('TOPLEFT', defaultSpellListScroll, -10, 10)
-defaultSpellListBg:SetPoint('BOTTOMRIGHT', defaultSpellListScroll, 30, -10)
+defaultSpellListBg:SetPoint('TOPLEFT', defaultSpellListScroll, -10, 4)
+defaultSpellListBg:SetPoint('BOTTOMRIGHT', defaultSpellListScroll, 26, -5)
 
 -- frame for custom spells -----------------------------------------------------
 local customSpellListFrame = CreateFrame('Frame', 'KuiSpellListConfigCustomSpellListFrame', opt)
@@ -105,8 +105,8 @@ customSpellListBg:SetBackdrop({
 })
 customSpellListBg:SetBackdropColor(.1, .1, .1, .3)
 customSpellListBg:SetBackdropBorderColor(.5, .5, .5)
-customSpellListBg:SetPoint('TOPLEFT', customSpellListScroll, -10, 10)
-customSpellListBg:SetPoint('BOTTOMRIGHT', customSpellListScroll, 30, -10)
+customSpellListBg:SetPoint('TOPLEFT', customSpellListScroll, -10, 4)
+customSpellListBg:SetPoint('BOTTOMRIGHT', customSpellListScroll, 26, -5)
 
 -- scroll list titles
 local defaultListTitle = opt:CreateFontString(nil, 'ARTWORK', 'GameFontNormalLarge')
@@ -439,6 +439,7 @@ local function ClassUpdate()
     HideAllSpellFrames()
 
     classDropDown:initialize()
+    classDropDown:SetFrameStrata('TOOLTIP')
 
     whitelist.default = spelllist.GetDefaultSpells(class, true)
     whitelist.custom  = {}
@@ -466,7 +467,7 @@ local function ClassUpdate()
         if pv then
             f:SetPoint('TOPLEFT', pv, 'BOTTOMLEFT', 0, -2)
         else
-            f:SetPoint('TOPLEFT')
+            f:SetPoint('TOPLEFT',0,-4)
         end
 
         f:Show()
@@ -481,7 +482,7 @@ local function ClassUpdate()
         if pv then
             f:SetPoint('TOPLEFT', pv, 'BOTTOMLEFT', 0, -2)
         else
-            f:SetPoint('TOPLEFT')
+            f:SetPoint('TOPLEFT',0,-4)
         end
 
         f:Show()

@@ -1,5 +1,1 @@
-* bump toc
-* fix for legion api changes
-* fix unit frame taint due to use of UIDropDownMenu again
-* don't use addonloader anymore
-* add demon hunter
+* fix issue where class dropdown could be behind spell list
