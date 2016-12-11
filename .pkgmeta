@@ -1,3 +1,6 @@
+package-as:
+    Kui_SpellList_Config
+
 manual-changelog:
     filename: changelog
     markup-type: creole
