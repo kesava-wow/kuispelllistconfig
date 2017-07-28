@@ -10,6 +10,7 @@ local pcdd = LibStub('PhanxConfig-Dropdown')
 
 local list_items = {}
 local LIST_WHITELIST,LIST_BLACKLIST = 1,2
+local BTN_LIST_OWN,BTN_LIST_ALL,BTN_LIST_EXC = 1,2,3
 
 local addon = CreateFrame('Frame', 'KuiSpellListConfig', InterfaceOptionsFramePanelContainer)
 addon:Hide()
@@ -328,6 +329,19 @@ local function blacklist_Update(self)
     self:ParseList(list)
 end
 -- scripts #####################################################################
+local function Input_OnEnterPressed(self)
+    addon.button_own:Click()
+end
+local function Input_OnKeyUp(self)
+end
+local function InputButton_OnClick(self,button)
+    local text = addon.spell_input:GetText()
+
+    KSL:AddSpell(text,self.env == BTN_LIST_OWN,self.env == BTN_LIST_ALL)
+
+    addon.whitelist:Update()
+    addon.blacklist:Update()
+end
 function addon:OnShow()
     if addon.shown then return end
     addon.shown = true
@@ -339,21 +353,39 @@ function addon:OnShow()
     input:SetFontObject('ChatFontNormal')
     input:SetSize(173,30)
     input:SetPoint('CENTER',0,-90)
+    input:SetScript('OnEnterPressed',Input_OnEnterPressed)
+    input:SetScript('OnKeyUp',Input_OnKeyUp)
+    self.spell_input = input
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
+    b_own:EnableMouse(true)
+    b_own:RegisterForClicks('AnyUp')
     b_own:SetText('Own')
     b_own:SetSize(60,22)
     b_own:SetPoint('TOPLEFT',input,'BOTTOMLEFT',-7,0)
+    b_own:SetScript('OnClick',InputButton_OnClick)
+    b_own.env = BTN_LIST_OWN
+    self.button_own = b_own
 
     local b_all = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
+    b_all:EnableMouse(true)
+    b_all:RegisterForClicks('AnyUp')
     b_all:SetText('All')
     b_all:SetSize(60,22)
     b_all:SetPoint('LEFT',b_own,'RIGHT')
+    b_all:SetScript('OnClick',InputButton_OnClick)
+    b_all.env = BTN_LIST_ALL
+    self.button_all = b_all
 
     local b_exc = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
+    b_exc:EnableMouse(true)
+    b_exc:RegisterForClicks('AnyUp')
     b_exc:SetText('None')
     b_exc:SetSize(60,22)
     b_exc:SetPoint('LEFT',b_all,'RIGHT')
+    b_exc:SetScript('OnClick',InputButton_OnClick)
+    b_exc.env = BTN_LIST_EXC
+    self.button_exc = b_exc
 
     local whitelist = CreateList(self,'Whitelist')
     whitelist.scroll:SetSize(250,300)
