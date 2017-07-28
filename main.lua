@@ -8,6 +8,9 @@ local category = 'Kui |cff9966ffSpell List|r'
 local KSL = LibStub('KuiSpellList-2.0')
 local pcdd = LibStub('PhanxConfig-Dropdown')
 
+local list_items = {}
+local LIST_WHITELIST,LIST_BLACKLIST = 1,2
+
 local addon = CreateFrame('Frame', 'KuiSpellListConfig', InterfaceOptionsFramePanelContainer)
 addon:Hide()
 addon.name = category
@@ -71,33 +74,203 @@ local function CreateList(parent,name)
 
     return l
 end
--- scripts #####################################################################
+
+local PopulateListItem
+do
+    local function ListItem_ButtonAllOnClick(self)
+    end
+    local function ListItem_OnClick(self,button)
+        if button == 'LeftButton' then
+            self.btn_all:Click()
+        elseif button == 'RightButton' then
+            -- remove this spell
+            print('remove')
+        end
+    end
+    local function ListItem_OnEnter(self)
+        self.highlight:Show()
+        self:SetBackdropBorderColor(1,1,1)
+
+        if self.spell_link then
+            GameTooltip:SetOwner(self,'ANCHOR_NONE')
+            GameTooltip:SetPoint('LEFT',self,'RIGHT',0,2)
+            GameTooltip:SetHyperlink(self.spell_link)
+            GameTooltip:Show()
+        end
+    end
+    local function ListItem_OnLeave(self)
+        self.highlight:Hide()
+        self:SetBackdropBorderColor(.5,.5,.5)
+        GameTooltip:Hide()
+    end
+
+    local function CreateListItem(parent)
+        local f
+        for k,v in ipairs(list_items) do
+            if v and not v:IsShown() then
+                f = v
+                break
+            end
+        end
+
+        if not f then
+            f = CreateFrame('Button',nil,addon)
+            f:EnableMouse(true)
+            f:SetSize(250,43)
+            f:SetScript('OnClick',ListItem_OnClick)
+            f:Hide()
+
+            f:SetBackdrop({
+                bgFile = 'interface/chatframe/ChatFrameBackground',
+                edgeFile = 'interface/tooltips/ui-tooltip-border',
+                edgeSize = 16,
+                insets = { left = 4, right = 4, top = 4, bottom = 4 }
+            })
+            f:SetBackdropColor(.1,.1,.1,.3)
+            f:SetBackdropBorderColor(.5,.5,.5)
+
+            local highlight = f:CreateTexture('HIGHLIGHT')
+            highlight:SetTexture('interface/buttons/ui-listbox-highlight')
+            highlight:SetBlendMode('add')
+            highlight:SetAlpha(.5)
+            highlight:Hide()
+            highlight:SetPoint('TOPLEFT',4,-4)
+            highlight:SetPoint('BOTTOMRIGHT',-4,4)
+
+            local icon = f:CreateTexture('ARTWORK')
+            icon:SetSize(33,33)
+            icon:SetPoint('TOPLEFT',5,-5)
+
+            local name = f:CreateFontString(nil,'ARTWORK')
+            name:SetFontObject('GameFontNormal')
+            name:SetSize(200,18)
+            name:SetPoint('TOPLEFT',icon,'TOPRIGHT',5,0)
+            name:SetJustifyH('LEFT')
+
+            local spellid = f:CreateFontString(nil,'ARTWORK')
+            spellid:SetFontObject('GameFontNormal')
+            spellid:SetTextColor(.5,.5,.5)
+            spellid:SetSize(200,18)
+            spellid:SetPoint('BOTTOMLEFT',icon,'BOTTOMRIGHT',5,0)
+            spellid:SetJustifyH('LEFT')
+
+            local btn_all = CreateFrame('CheckButton',nil,f,'OptionsBaseCheckButtonTemplate')
+            btn_all:SetPoint('RIGHT',-4,0)
+            btn_all:SetScript('OnClick',ListItem_ButtonAllOnClick)
+
+            local btn_all_label = btn_all:CreateFontString(nil,'ARTWORK','GameFontHighlightSmall')
+            btn_all_label:SetAlpha(.7)
+            btn_all_label:SetText('All')
+            btn_all_label:SetPoint('RIGHT',btn_all,'LEFT')
+            btn_all.label = btn_all_label
+
+            f.highlight = highlight
+            f.icon = icon
+            f.name = name
+            f.spellid = spellid
+            f.btn_all = btn_all
+
+            f:SetScript('OnEnter',ListItem_OnEnter)
+            f:SetScript('OnLeave',ListItem_OnLeave)
+
+            tinsert(list_items,f)
+        end
+
+        f:SetParent(parent)
+        f.name:SetText('')
+        f.spellid:SetText('')
+        f.icon:SetTexture('interface/icons/inv_misc_questionmark')
+        f.btn_all:SetChecked(nil)
+        f.spell_link = nil
+        f.parent = parent
+
+        return f
+    end
+
+    function PopulateListItem(parent,id_or_name)
+        if not id_or_name then return end
+
+        local spell_id,spell_name
+        if string.match(id_or_name,'^%d+$') then
+            spell_id = id_or_name
+        else
+            spell_name = id_or_name
+        end
+
+        local f = CreateListItem(parent)
+        f.env = spell_id or spell_name
+
+        if spell_id then
+            spell_name = GetSpellInfo(spell_id)
+            f.spell_link = GetSpellLink(spell_id)
+        end
+
+        if spell_name then
+            f.name:SetText(spell_name)
+        end
+
+        if spell_id then
+            f.spellid:SetText(spell_id)
+
+            local spell_icon = select(3,GetSpellInfo(spell_id))
+            if spell_icon then
+                f.icon:SetTexture(spell_icon)
+            end
+        end
+
+        if parent.list == LIST_WHITELIST then
+            f.btn_all:Show()
+            f.btn_all:SetChecked(KSL:SpellIncludedAll(id_or_name))
+        else
+            f.btn_all:Hide()
+        end
+
+        f:Show()
+        return f
+    end
+end
+local function InsertListItem(parent,id_or_name)
+    local f = PopulateListItem(parent,id_or_name)
+    tinsert(parent.items,f)
+
+    if #parent.items == 1 then
+        f:SetPoint('TOPLEFT',0,-10)
+    else
+        local pi = parent.items[#parent.items-1]
+        f:SetPoint('TOP',pi,'BOTTOM')
+    end
+end
 local function whitelist_Update(self)
-    local all = KSL:Export(true,true)
-    local own = KSL:Export(true)
+    -- fetch items from KSL and populate list
+    for k,v in ipairs(self.items) do
+        v:Hide()
+    end
+    wipe(self.items)
 
+    -- merge "own" and "all" lists into a copy
     local list = {}
-    for id,_ in pairs(all) do
-        local n = GetSpellInfo(id)
-        tinsert(list, {
-            text = n or id,
-            value = id
-        })
+    for k,v in pairs(KSL:Export(true,true)) do
+        list[k] = v
+    end
+    for k,v in pairs(KSL:Export(true)) do
+        list[k] = v
     end
 
-    for id,_ in pairs(own) do
-        local n = GetSpellInfo(id)
-        tinsert(list, {
-            text = n or id,
-            value = id
-        })
+    for k,v in pairs(list) do
+        InsertListItem(self,k)
     end
-
-    self:SetList(list)
 end
 local function blacklist_Update(self)
-    local exclude = KSL:Export()
+    for k,v in ipairs(self.items) do
+        v:Hide()
+    end
+    wipe(self.items)
+
+    for k,v in pairs(KSL:Export()) do
+        InsertListItem(self,k)
+    end
 end
+-- scripts #####################################################################
 function addon:OnShow()
     if addon.shown then return end
     addon.shown = true
@@ -128,10 +301,33 @@ function addon:OnShow()
     local whitelist = CreateList(self,'Whitelist')
     whitelist.scroll:SetSize(250,300)
     whitelist.scroll:SetPoint('TOPLEFT',30,-44)
+    whitelist.Update = whitelist_Update
+    whitelist.list = LIST_WHITELIST
+    whitelist.items = {}
+    self.whitelist = whitelist
 
     local blacklist = CreateList(self,'Blacklist')
     blacklist.scroll:SetSize(250,300)
     blacklist.scroll:SetPoint('TOPRIGHT',-44,-44)
+    blacklist.Update = blacklist_Update
+    blacklist.list = LIST_BLACKLIST
+    blacklist.items = {}
+    self.blacklist = blacklist
+
+    -- #########################################################################
+    KSL:AddSpell(204021,true,true)
+    KSL:AddSpell(123,true)
+    KSL:AddSpell('fake spell in own',true)
+    KSL:AddSpell('fake spell in all',true,true)
+    KSL:AddSpell(124,true,true)
+    KSL:AddSpell(12,true,true)
+    KSL:AddSpell(13,true,true)
+    KSL:AddSpell(16,true,true)
+    KSL:AddSpell(1122331,true,true)
+    KSL:AddSpell(153211)
+
+    self.whitelist:Update()
+    self.blacklist:Update()
 end
 -- events ######################################################################
 function addon:ADDON_LOADED(loaded)
