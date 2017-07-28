@@ -49,7 +49,7 @@ local CreateList
 do
     -- list item functions #####################################################
     local function ListItem_ButtonAllOnClick(self)
-        if spell.item.parent.list ~= LIST_WHITELIST then return end
+        if self.item.parent.list ~= LIST_WHITELIST then return end
         if not self.item.env then return end
 
         KSL:RemoveSpell(self.item.env,true,not self:GetChecked())
@@ -97,8 +97,9 @@ do
 
         if not f then
             f = CreateFrame('Button',nil,addon)
-            f:EnableMouse(true)
             f:SetSize(250,43)
+            f:EnableMouse(true)
+            f:RegisterForClicks('AnyUp')
             f:SetScript('OnClick',ListItem_OnClick)
             f:Hide()
 
