@@ -1,1 +1,4 @@
-* update toc
+* update to KuiSpellList-2.0. Filtering style has completely changed and as
+such the old lists have been deleted.
+* add capability to specify spells to track from any caster
+* add capability to blacklist spells included by the default filter
