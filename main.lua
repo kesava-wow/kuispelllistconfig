@@ -97,7 +97,7 @@ do
 
         if not f then
             f = CreateFrame('Button',nil,addon)
-            f:SetSize(250,43)
+            f:SetSize(250,40)
             f:EnableMouse(true)
             f:RegisterForClicks('AnyUp')
             f:SetScript('OnClick',ListItem_OnClick)
@@ -121,20 +121,20 @@ do
             highlight:SetPoint('BOTTOMRIGHT',-4,4)
 
             local icon = f:CreateTexture('ARTWORK')
-            icon:SetSize(33,33)
+            icon:SetSize(30,30)
             icon:SetPoint('TOPLEFT',5,-5)
 
             local name = f:CreateFontString(nil,'ARTWORK')
             name:SetFontObject('GameFontNormal')
             name:SetSize(200,18)
-            name:SetPoint('TOPLEFT',icon,'TOPRIGHT',5,0)
+            name:SetPoint('TOPLEFT',icon,'TOPRIGHT',5,1)
             name:SetJustifyH('LEFT')
 
             local spellid = f:CreateFontString(nil,'ARTWORK')
-            spellid:SetFontObject('GameFontNormal')
+            spellid:SetFontObject('GameFontNormalSmall')
             spellid:SetTextColor(.5,.5,.5)
             spellid:SetSize(200,18)
-            spellid:SetPoint('BOTTOMLEFT',icon,'BOTTOMRIGHT',5,0)
+            spellid:SetPoint('BOTTOMLEFT',icon,'BOTTOMRIGHT',5,-1)
             spellid:SetJustifyH('LEFT')
 
             local btn_all = CreateFrame('CheckButton',nil,f,'OptionsBaseCheckButtonTemplate')
@@ -368,6 +368,7 @@ function addon:OnShow()
     KSL:AddSpell('fake spell in all',true,true)
     KSL:AddSpell(17,true,true)
     KSL:AddSpell(153211)
+    KSL:AddSpell(227723,true,true)
 
     self.whitelist:Update()
     self.blacklist:Update()
