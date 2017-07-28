@@ -49,20 +49,20 @@ local CreateList
 do
     -- list item functions #####################################################
     local function ListItem_ButtonAllOnClick(self)
-        if self.item.parent.list ~= LIST_WHITELIST then return end
-        if not self.item.env then return end
+        if self.parent.parent.list ~= LIST_WHITELIST then return end
+        if not self.parent.env then return end
 
-        KSL:RemoveSpell(self.item.env,true,not self:GetChecked())
-        KSL:AddSpell(self.item.env,true,self:GetChecked())
+        KSL:RemoveSpell(self.parent.env,true,not self:GetChecked())
+        KSL:AddSpell(self.parent.env,true,self:GetChecked())
 
-        self.item.parent:Update()
+        self.parent.parent:Update()
     end
     local function ListItem_OnClick(self,button)
-        if button == 'LeftButton' and self.list == LIST_WHITELIST then
+        if button == 'LeftButton' and self.parent.list == LIST_WHITELIST then
             self.btn_all:Click()
         elseif button == 'RightButton' then
             -- remove this spell
-            if self.list == LIST_WHITELIST then
+            if self.parent.list == LIST_WHITELIST then
                 KSL:RemoveSpell(self.env,true,self.btn_all:GetChecked())
             else
                 KSL:RemoveSpell(self.env)
@@ -140,7 +140,7 @@ do
             local btn_all = CreateFrame('CheckButton',nil,f,'OptionsBaseCheckButtonTemplate')
             btn_all:SetPoint('RIGHT',-4,0)
             btn_all:SetScript('OnClick',ListItem_ButtonAllOnClick)
-            btn_all.item = f
+            btn_all.parent = f
 
             local btn_all_label = btn_all:CreateFontString(nil,'ARTWORK','GameFontHighlightSmall')
             btn_all_label:SetAlpha(.7)
