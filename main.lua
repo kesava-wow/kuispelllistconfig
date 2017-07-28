@@ -165,6 +165,7 @@ do
         end
 
         f:SetParent(parent)
+        f:ClearAllPoints()
         f.name:SetText('')
         f.spellid:SetText('')
         f.icon:SetTexture('interface/icons/inv_misc_questionmark')
