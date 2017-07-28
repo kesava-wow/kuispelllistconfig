@@ -45,38 +45,9 @@ local function SlashCommand(msg)
     end
 end
 
-local function CreateList(parent,name)
-    local l = CreateFrame('Frame',nil,parent)
-    l:SetSize(1,1)
-
-    local scroll = CreateFrame('ScrollFrame',nil,parent,'UIPanelScrollFrameTemplate')
-    scroll:SetScrollChild(l)
-
-    local bg = CreateFrame('Frame',nil,parent)
-    bg:SetBackdrop({
-        bgFile = 'interface/chatframe/ChatFrameBackground',
-        edgeFile = 'interface/tooltips/ui-tooltip-border',
-        edgeSize = 16,
-        insets = { left = 4, right = 4, top = 4, bottom = 4 }
-    })
-    bg:SetBackdropColor(.1,.1,.1,.3)
-    bg:SetBackdropBorderColor(.5,.5,.5)
-    bg:SetPoint('TOPLEFT',scroll,-10,4)
-    bg:SetPoint('BOTTOMRIGHT',scroll,26,-5)
-
-    local title = parent:CreateFontString(nil,'ARTWORK','GameFontNormalLarge')
-    title:SetText(name)
-    title:SetPoint('BOTTOM',bg,'TOP',0,3)
-
-    l.scroll = scroll
-    l.bg = bg
-    l.title = title
-
-    return l
-end
-
-local PopulateListItem
+local CreateList
 do
+    -- list item functions #####################################################
     local function ListItem_ButtonAllOnClick(self)
     end
     local function ListItem_OnClick(self,button)
@@ -103,7 +74,6 @@ do
         self:SetBackdropBorderColor(.5,.5,.5)
         GameTooltip:Hide()
     end
-
     local function CreateListItem(parent)
         local f
         for k,v in ipairs(list_items) do
@@ -186,36 +156,31 @@ do
 
         return f
     end
-
-    function PopulateListItem(parent,id_or_name)
+    local function PopulateListItem(parent,id_or_name)
         if not id_or_name then return end
 
-        local spell_id,spell_name
-        if string.match(id_or_name,'^%d+$') then
-            spell_id = id_or_name
-        else
-            spell_name = id_or_name
-        end
-
         local f = CreateListItem(parent)
-        f.env = spell_id or spell_name
+        f.env = id_or_name
 
-        if spell_id then
-            spell_name = GetSpellInfo(spell_id)
-            f.spell_link = GetSpellLink(spell_id)
+        local spell_id   = tonumber(id_or_name)
+        local spell_name = spell_id and GetSpellInfo(spell_id)
+        local spell_icon = spell_id and select(3,GetSpellInfo(spell_id))
+        f.spell_link     = spell_id and GetSpellLink(spell_id)
+
+        if not spell_id or not spell_name then
+            -- unknown spell id
+            spell_id = nil
+            spell_name = id_or_name
         end
 
         if spell_name then
             f.name:SetText(spell_name)
         end
-
         if spell_id then
             f.spellid:SetText(spell_id)
-
-            local spell_icon = select(3,GetSpellInfo(spell_id))
-            if spell_icon then
-                f.icon:SetTexture(spell_icon)
-            end
+        end
+        if spell_icon then
+            f.icon:SetTexture(spell_icon)
         end
 
         if parent.list == LIST_WHITELIST then
@@ -228,24 +193,94 @@ do
         f:Show()
         return f
     end
-end
-local function InsertListItem(parent,id_or_name)
-    local f = PopulateListItem(parent,id_or_name)
-    tinsert(parent.items,f)
 
-    if #parent.items == 1 then
-        f:SetPoint('TOPLEFT',0,-10)
-    else
-        local pi = parent.items[#parent.items-1]
-        f:SetPoint('TOP',pi,'BOTTOM')
+    -- list functions ##########################################################
+    local function ListSort(a,b)
+        a = type(a) == 'table' and a[2] or (a)
+        b = type(b) == 'table' and b[2] or (b)
+        return strlower(a) < strlower(b)
+    end
+    local function List_Wipe(self)
+        for k,v in ipairs(self.items) do
+            v:Hide()
+        end
+        wipe(self.items)
+    end
+    local function List_ParseList(self,list)
+        local list_sorted = {}
+
+        for k,v in pairs(list) do
+            local id,name
+            id = tonumber(k)
+            name = id and GetSpellInfo(id)
+
+            if id and name then
+                -- spell id and name
+                tinsert(list_sorted,{id,name})
+            else
+                -- string
+                tinsert(list_sorted,k)
+            end
+        end
+
+        table.sort(list_sorted,ListSort)
+
+        for k,v in ipairs(list_sorted) do
+            if type(v) == 'table' then
+                self:InsertItem(v[1])
+            else
+                self:InsertItem(v)
+            end
+        end
+    end
+    local function List_InsertItem(self,id_or_name)
+        local f = PopulateListItem(self,id_or_name)
+        tinsert(self.items,f)
+
+        if #self.items == 1 then
+            f:SetPoint('TOPLEFT',0,-10)
+        else
+            local pi = self.items[#self.items-1]
+            f:SetPoint('TOP',pi,'BOTTOM')
+        end
+    end
+    function CreateList(parent,name)
+        local l = CreateFrame('Frame',nil,parent)
+        l:SetSize(1,1)
+
+        local scroll = CreateFrame('ScrollFrame',nil,parent,'UIPanelScrollFrameTemplate')
+        scroll:SetScrollChild(l)
+
+        local bg = CreateFrame('Frame',nil,parent)
+        bg:SetBackdrop({
+            bgFile = 'interface/chatframe/ChatFrameBackground',
+            edgeFile = 'interface/tooltips/ui-tooltip-border',
+            edgeSize = 16,
+            insets = { left = 4, right = 4, top = 4, bottom = 4 }
+        })
+        bg:SetBackdropColor(.1,.1,.1,.3)
+        bg:SetBackdropBorderColor(.5,.5,.5)
+        bg:SetPoint('TOPLEFT',scroll,-10,4)
+        bg:SetPoint('BOTTOMRIGHT',scroll,26,-5)
+
+        local title = parent:CreateFontString(nil,'ARTWORK','GameFontNormalLarge')
+        title:SetText(name)
+        title:SetPoint('BOTTOM',bg,'TOP',0,3)
+
+        l.scroll = scroll
+        l.bg = bg
+        l.title = title
+        l.items = {}
+
+        l.Wipe = List_Wipe
+        l.ParseList = List_ParseList
+        l.InsertItem = List_InsertItem
+
+        return l
     end
 end
 local function whitelist_Update(self)
-    -- fetch items from KSL and populate list
-    for k,v in ipairs(self.items) do
-        v:Hide()
-    end
-    wipe(self.items)
+    self:Wipe()
 
     -- merge "own" and "all" lists into a copy
     local list = {}
@@ -256,19 +291,17 @@ local function whitelist_Update(self)
         list[k] = v
     end
 
-    for k,v in pairs(list) do
-        InsertListItem(self,k)
-    end
+    self:ParseList(list)
 end
 local function blacklist_Update(self)
-    for k,v in ipairs(self.items) do
-        v:Hide()
-    end
-    wipe(self.items)
+    self:Wipe()
 
+    local list = {}
     for k,v in pairs(KSL:Export()) do
-        InsertListItem(self,k)
+        list[k] = v
     end
+
+    self:ParseList(list)
 end
 -- scripts #####################################################################
 function addon:OnShow()
@@ -319,11 +352,7 @@ function addon:OnShow()
     KSL:AddSpell(123,true)
     KSL:AddSpell('fake spell in own',true)
     KSL:AddSpell('fake spell in all',true,true)
-    KSL:AddSpell(124,true,true)
-    KSL:AddSpell(12,true,true)
-    KSL:AddSpell(13,true,true)
-    KSL:AddSpell(16,true,true)
-    KSL:AddSpell(1122331,true,true)
+    KSL:AddSpell(17,true,true)
     KSL:AddSpell(153211)
 
     self.whitelist:Update()
