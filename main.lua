@@ -63,7 +63,7 @@ do
         elseif button == 'RightButton' then
             -- remove this spell
             if self.list == LIST_WHITELIST then
-                KSL:RemoveSpell(self.env,true,self:GetChecked())
+                KSL:RemoveSpell(self.env,true,self.btn_all:GetChecked())
             else
                 KSL:RemoveSpell(self.env)
             end
