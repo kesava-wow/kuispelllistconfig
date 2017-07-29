@@ -125,16 +125,14 @@ do
                 edgeSize = 16,
                 insets = { left = 4, right = 4, top = 4, bottom = 4 }
             })
-            f:SetBackdropColor(.1,.1,.1,.3)
+            f:SetBackdropColor(0,0,0,.3)
             f:SetBackdropBorderColor(.5,.5,.5)
 
             local highlight = f:CreateTexture('HIGHLIGHT')
-            highlight:SetTexture('interface/buttons/ui-listbox-highlight')
-            highlight:SetBlendMode('add')
-            highlight:SetAlpha(.5)
+            highlight:SetAtlas('PetList-ButtonHighlight')
             highlight:Hide()
-            highlight:SetPoint('TOPLEFT',4,-4)
-            highlight:SetPoint('BOTTOMRIGHT',-4,4)
+            highlight:SetPoint('TOPLEFT',2,-2)
+            highlight:SetPoint('BOTTOMRIGHT',-2,2)
 
             local icon = f:CreateTexture('ARTWORK')
             icon:SetPoint('TOPLEFT',5,-5)
