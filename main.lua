@@ -287,7 +287,15 @@ do
             end
         end
 
+        -- sort and insert items from list
         self:ParseList(list)
+
+        -- hide/show empty hint
+        if #self.items > 0 then
+            self.empty_text:Hide()
+        else
+            self.empty_text:Show()
+        end
 
         -- update saved variables
         KuiSpellListConfigSaved.include_own = KSL:Export(true)
@@ -317,9 +325,16 @@ do
         title:SetText(name)
         title:SetPoint('BOTTOM',bg,'TOP',0,3)
 
+        local empty_text = bg:CreateFontString(nil,'ARTWORK','GameFontHighlight')
+        empty_text:SetText('No items')
+        empty_text:SetAlpha(.5)
+        empty_text:SetPoint('CENTER')
+        empty_text:Hide()
+
         l.scroll = scroll
         l.bg = bg
         l.title = title
+        l.empty_text = empty_text
         l.items = {}
 
         l.Wipe = List_Wipe
