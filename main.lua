@@ -270,6 +270,30 @@ do
             f:SetPoint('TOP',pi,'BOTTOM')
         end
     end
+    local function List_Update(self)
+        self:Wipe()
+
+        local list = {}
+        if self.list == LIST_WHITELIST then
+            for k,v in pairs(KSL:Export(true,true)) do
+                list[k] = v
+            end
+            for k,v in pairs(KSL:Export(true)) do
+                list[k] = v
+            end
+        elseif self.list == LIST_BLACKLIST then
+            for k,v in pairs(KSL:Export()) do
+                list[k] = v
+            end
+        end
+
+        self:ParseList(list)
+
+        -- update saved variables
+        KuiSpellListConfigSaved.include_own = KSL:Export(true)
+        KuiSpellListConfigSaved.include_all = KSL:Export(true,true)
+        KuiSpellListConfigSaved.exclude = KSL:Export()
+    end
     function CreateList(parent,name)
         local l = CreateFrame('Frame',nil,parent)
         l:SetSize(1,1)
@@ -301,33 +325,10 @@ do
         l.Wipe = List_Wipe
         l.ParseList = List_ParseList
         l.InsertItem = List_InsertItem
+        l.Update = List_Update
 
         return l
     end
-end
-local function whitelist_Update(self)
-    self:Wipe()
-
-    -- merge "own" and "all" lists into a copy
-    local list = {}
-    for k,v in pairs(KSL:Export(true,true)) do
-        list[k] = v
-    end
-    for k,v in pairs(KSL:Export(true)) do
-        list[k] = v
-    end
-
-    self:ParseList(list)
-end
-local function blacklist_Update(self)
-    self:Wipe()
-
-    local list = {}
-    for k,v in pairs(KSL:Export()) do
-        list[k] = v
-    end
-
-    self:ParseList(list)
 end
 -- scripts #####################################################################
 local function Input_OnEnterPressed(self)
@@ -391,7 +392,6 @@ function addon:OnShow()
     local whitelist = CreateList(self,'Whitelist')
     whitelist.scroll:SetSize(250,300)
     whitelist.scroll:SetPoint('TOPLEFT',30,-44)
-    whitelist.Update = whitelist_Update
     whitelist.list = LIST_WHITELIST
     whitelist.items = {}
     self.whitelist = whitelist
@@ -399,19 +399,9 @@ function addon:OnShow()
     local blacklist = CreateList(self,'Blacklist')
     blacklist.scroll:SetSize(250,300)
     blacklist.scroll:SetPoint('TOPRIGHT',-44,-44)
-    blacklist.Update = blacklist_Update
     blacklist.list = LIST_BLACKLIST
     blacklist.items = {}
     self.blacklist = blacklist
-
-    -- #########################################################################
-    KSL:AddSpell(204021,true,true)
-    KSL:AddSpell(123,true)
-    KSL:AddSpell('fake spell in own',true)
-    KSL:AddSpell('fake spell in all',true,true)
-    KSL:AddSpell(17,true,true)
-    KSL:AddSpell(153211)
-    KSL:AddSpell(227723,true,true)
 
     self.whitelist:Update()
     self.blacklist:Update()
@@ -428,4 +418,23 @@ function addon:ADDON_LOADED(loaded)
     SLASH_KUISPELLLIST1 = '/kuislc'
     SLASH_KUISPELLLIST2 = '/kslc'
     SlashCmdList.KUISPELLLIST = SlashCommand
+
+    -- create/verify saved variable
+    if not KuiSpellListConfigSaved or type(KuiSpellListConfigSaved) ~= 'table' then
+        KuiSpellListConfigSaved = {}
+        KuiSpellListConfigSaved.include_own = {}
+        KuiSpellListConfigSaved.include_all = {}
+        KuiSpellListConfigSaved.exclude = {}
+    end
+
+    -- import our saved spells into KSL
+    if type(KuiSpellListConfigSaved.include_own) == 'table' then
+        KSL:Import(KuiSpellListConfigSaved.include_own,true)
+    end
+    if type(KuiSpellListConfigSaved.include_all) == 'table' then
+        KSL:Import(KuiSpellListConfigSaved.include_all,true,true)
+    end
+    if type(KuiSpellListConfigSaved.exclude) == 'table' then
+        KSL:Import(KuiSpellListConfigSaved.exclude)
+    end
 end
