@@ -364,7 +364,7 @@ local function Input_OnTextChanged(self,user)
     else
         -- unrecognised text
         self:SetTextColor(1,0,0)
-        self.output = text
+        self.output = strlower(text)
     end
 end
 local function InputButton_OnClick(self,button)
