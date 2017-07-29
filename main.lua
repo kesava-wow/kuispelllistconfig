@@ -348,14 +348,39 @@ end
 -- scripts #####################################################################
 local function Input_OnEnterPressed(self)
     addon.button_own:Click()
+    self:SetText('')
+    self:SetFocus()
 end
-local function Input_OnKeyUp(self)
+local function Input_OnTextChanged(self,user)
+    self.output = nil
+    self:SetTextColor(1,1,1)
+    if not user then return end
+
+    local text = self:GetText()
+    local spell_id = select(7,GetSpellInfo(text))
+
+    if spell_id then
+        -- spell name or id exists in spellbook
+        self:SetTextColor(0,1,0)
+        self.output = spell_id
+    else
+        -- unrecognised text
+        self:SetTextColor(1,0,0)
+        self.output = text
+    end
 end
 local function InputButton_OnClick(self,button)
-    local text = addon.spell_input:GetText()
-    text = tonumber(text) or text
+    local spell = addon.spell_input.output
+    if not spell then return end
+    spell = tonumber(spell) or spell
 
-    KSL:AddSpell(text,self.env == BTN_LIST_OWN,self.env == BTN_LIST_ALL)
+    if self.env == BTN_LIST_OWN or self.env == BTN_LIST_ALL then
+        -- add to whitelist
+        KSL:AddSpell(spell,true,self.env == BTN_LIST_ALL)
+    else
+        -- add to blacklist
+        KSL:AddSpell(spell)
+    end
 
     addon.whitelist:Update()
     addon.blacklist:Update()
@@ -372,7 +397,7 @@ function addon:OnShow()
     input:SetSize(173,30)
     input:SetPoint('CENTER',0,-90)
     input:SetScript('OnEnterPressed',Input_OnEnterPressed)
-    input:SetScript('OnKeyUp',Input_OnKeyUp)
+    input:SetScript('OnTextChanged',Input_OnTextChanged)
     self.spell_input = input
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
