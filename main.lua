@@ -98,7 +98,7 @@ do
 
         if not f then
             f = CreateFrame('Button',nil,addon)
-            f:SetSize(250,40)
+            f:SetWidth(250)
             f:EnableMouse(true)
             f:RegisterForClicks('AnyUp')
             f:SetScript('OnClick',ListItem_OnClick)
@@ -122,7 +122,6 @@ do
             highlight:SetPoint('BOTTOMRIGHT',-4,4)
 
             local icon = f:CreateTexture('ARTWORK')
-            icon:SetSize(30,30)
             icon:SetPoint('TOPLEFT',5,-5)
 
             local name = f:CreateFontString(nil,'ARTWORK')
@@ -200,6 +199,12 @@ do
             -- unknown spell id
             spell_id = nil
             spell_name = id_or_name
+
+            f:SetHeight(30)
+            f.icon:SetSize(20,20)
+        else
+            f:SetHeight(40)
+            f.icon:SetSize(30,30)
         end
 
         if spell_name then
