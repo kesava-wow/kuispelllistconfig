@@ -348,8 +348,6 @@ end
 -- scripts #####################################################################
 local function Input_OnEnterPressed(self)
     addon.button_own:Click()
-    self:SetText('')
-    self:SetFocus()
 end
 local function Input_OnTextChanged(self,user)
     self.output = nil
@@ -373,6 +371,9 @@ local function InputButton_OnClick(self,button)
     local spell = addon.spell_input.output
     if not spell then return end
     spell = tonumber(spell) or spell
+
+    addon.spell_input:SetText('')
+    addon.spell_input:SetFocus()
 
     if self.env == BTN_LIST_OWN or self.env == BTN_LIST_ALL then
         -- add to whitelist
