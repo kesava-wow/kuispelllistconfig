@@ -75,12 +75,27 @@ do
         self.highlight:Show()
         self:SetBackdropBorderColor(1,1,1)
 
+        GameTooltip:SetOwner(self,'ANCHOR_NONE')
+        GameTooltip:SetPoint('LEFT',self,'RIGHT',5,0)
+
         if self.spell_link then
-            GameTooltip:SetOwner(self,'ANCHOR_NONE')
-            GameTooltip:SetPoint('LEFT',self,'RIGHT',0,2)
             GameTooltip:SetHyperlink(self.spell_link)
-            GameTooltip:Show()
+            GameTooltip:AddLine('|nTracked by spell ID',1,1,1)
+        else
+            GameTooltip:AddLine(self.name:GetText(),1,1,1)
+            GameTooltip:AddLine('|nTracked by spell name',1,1,1)
         end
+
+        if self.parent.list == LIST_WHITELIST then
+            if self.btn_all:GetChecked() then
+                GameTooltip:AddLine('Left-click to track own casts only',.5,1,.5)
+            else
+                GameTooltip:AddLine('Left-click to track from any caster',.5,1,.5)
+            end
+        end
+
+        GameTooltip:AddLine('Right-click to remove',1,.5,.5)
+        GameTooltip:Show()
     end
     local function ListItem_OnLeave(self)
         self.highlight:Hide()
