@@ -338,6 +338,7 @@ local function Input_OnKeyUp(self)
 end
 local function InputButton_OnClick(self,button)
     local text = addon.spell_input:GetText()
+    text = tonumber(text) or text
 
     KSL:AddSpell(text,self.env == BTN_LIST_OWN,self.env == BTN_LIST_ALL)
 
