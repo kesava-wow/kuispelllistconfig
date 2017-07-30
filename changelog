@@ -1,4 +1,7 @@
-* update to KuiSpellList-2.0. Filtering style has completely changed and as
-such the old lists have been deleted.
+* update to KuiSpellList-2.0. Filtering style has completely changed and as such the old lists have been deleted.
 * add capability to specify spells to track from any caster
 * add capability to blacklist spells included by the default filter
+
+BETA NOTES
+29-jul
+* initial beta release for KNP2 testing. Needs some UI work, obviously. 
