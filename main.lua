@@ -465,14 +465,14 @@ function addon:OnShow()
     addon.shown = true
 
     local whitelist = CreateList(self,'Whitelist')
-    whitelist.scroll:SetSize(250,300)
+    whitelist.scroll:SetSize(250,390)
     whitelist.scroll:SetPoint('TOPLEFT',30,-44)
     whitelist.list = LIST_WHITELIST
     whitelist.items = {}
     self.whitelist = whitelist
 
     local blacklist = CreateList(self,'Blacklist')
-    blacklist.scroll:SetSize(250,300)
+    blacklist.scroll:SetSize(250,390)
     blacklist.scroll:SetPoint('TOPRIGHT',-44,-44)
     blacklist.list = LIST_BLACKLIST
     blacklist.items = {}
@@ -484,7 +484,7 @@ function addon:OnShow()
     input:EnableMouse(true)
     input:SetFontObject('ChatFontNormal')
     input:SetSize(173,30)
-    input:SetPoint('TOP',0,-90)
+    input:SetPoint('TOP',0,-480)
     input:SetScript('OnEnterPressed',Input_OnEnterPressed)
     input:SetScript('OnTextChanged',Input_OnTextChanged)
     input:SetScript('OnEditFocusGained',Input_UpdateTooltip)
