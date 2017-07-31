@@ -365,7 +365,11 @@ do
 end
 -- scripts #####################################################################
 local function Input_OnEnterPressed(self)
-    addon.button_own:Click()
+    if IsAltKeyDown() then
+        addon.button_exc:Click()
+    else
+        addon.button_own:Click()
+    end
 end
 local function Input_OnTextChanged(self,user)
     self.output = nil
@@ -382,12 +386,26 @@ local function Input_OnTextChanged(self,user)
     else
         -- unrecognised text
         self:SetTextColor(1,0,0)
-        self.output = strlower(text)
     end
 end
 local function InputButton_OnClick(self,button)
     local spell = addon.spell_input.output
-    if not spell then return end
+    if not spell or IsShiftKeyDown() then
+        -- track text verbatim
+        spell = strlower(addon.spell_input:GetText())
+        if tonumber(spell) then
+            if addon.spell_input.output then
+                -- convert to name
+                spell = GetSpellInfo(spell)
+                spell = spell and strlower(spell) or nil
+            else
+                -- unrecognised spell id; doesn't make sense to insert
+                return
+            end
+        end
+    end
+
+    if not spell or spell == '' then return end
     spell = tonumber(spell) or spell
 
     addon.spell_input:SetText('')
