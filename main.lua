@@ -88,13 +88,13 @@ do
 
         if self.parent.list == LIST_WHITELIST then
             if self.btn_all:GetChecked() then
-                GameTooltip:AddLine('Left-click to track own casts only',.5,1,.5)
+                GameTooltip:AddLine('Left click to track own casts only',.5,1,.5)
             else
-                GameTooltip:AddLine('Left-click to track from any caster',.5,1,.5)
+                GameTooltip:AddLine('Left click to track from any caster',.5,1,.5)
             end
         end
 
-        GameTooltip:AddLine('Right-click to remove',1,.5,.5)
+        GameTooltip:AddLine('Right click to remove',1,.5,.5)
         GameTooltip:Show()
     end
     local function ListItem_OnLeave(self)
@@ -364,6 +364,31 @@ do
     end
 end
 -- scripts #####################################################################
+local function Input_UpdateTooltip(self)
+    if self:HasFocus() and self:GetText() ~= '' then
+        self.tooltip:SetOwner(self,'ANCHOR_NONE')
+        self.tooltip:SetPoint('LEFT',self,'RIGHT',5,0)
+
+        if self.output and GetSpellLink(self.output) then
+            -- show matched spell
+            self.tooltip:SetHyperlink(GetSpellLink(self.output))
+            self.tooltip:AddLine('|n')
+        else
+            self.tooltip:AddLine('Unknown')
+        end
+
+        self.tooltip:AddLine('Enter to insert into whitelist',.5,1,.5)
+        self.tooltip:AddLine('Alt-Enter to insert into blacklist',1,.5,.5)
+
+        if self.output then
+            self.tooltip:AddLine('Shift-Enter to track by name',.7,.7,.7)
+        end
+
+        self.tooltip:Show()
+    else
+        self.tooltip:Hide()
+    end
+end
 local function Input_OnEnterPressed(self)
     if IsAltKeyDown() then
         addon.button_exc:Click()
@@ -387,6 +412,8 @@ local function Input_OnTextChanged(self,user)
         -- unrecognised text
         self:SetTextColor(1,0,0)
     end
+
+    Input_UpdateTooltip(self)
 end
 local function InputButton_OnClick(self,button)
     local spell = addon.spell_input.output
@@ -435,7 +462,11 @@ function addon:OnShow()
     input:SetPoint('CENTER',0,-90)
     input:SetScript('OnEnterPressed',Input_OnEnterPressed)
     input:SetScript('OnTextChanged',Input_OnTextChanged)
+    input:SetScript('OnEditFocusGained',Input_UpdateTooltip)
+    input:SetScript('OnEditFocusLost',Input_UpdateTooltip)
     self.spell_input = input
+
+    input.tooltip = CreateFrame('GameTooltip','KuiSpellListConfigInputHintTooltip',input,'GameTooltipTemplate')
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
     b_own:EnableMouse(true)
