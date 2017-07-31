@@ -3,5 +3,11 @@
 * add capability to blacklist spells included by the default filter
 
 BETA NOTES
+30-jul
+* add shift and alt keyboard shortcuts to spell entry
+* add tooltip hint to spell entry editbox
+* reposition elements
+* fix integer overflow when entering large numbers, for whatever reason
+
 29-jul
-* initial beta release for KNP2 testing. Needs some UI work, obviously. 
+* initial beta release for KNP2 testing. Needs some UI work, obviously.
