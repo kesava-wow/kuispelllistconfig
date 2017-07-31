@@ -464,13 +464,27 @@ function addon:OnShow()
     if addon.shown then return end
     addon.shown = true
 
+    local whitelist = CreateList(self,'Whitelist')
+    whitelist.scroll:SetSize(250,300)
+    whitelist.scroll:SetPoint('TOPLEFT',30,-44)
+    whitelist.list = LIST_WHITELIST
+    whitelist.items = {}
+    self.whitelist = whitelist
+
+    local blacklist = CreateList(self,'Blacklist')
+    blacklist.scroll:SetSize(250,300)
+    blacklist.scroll:SetPoint('TOPRIGHT',-44,-44)
+    blacklist.list = LIST_BLACKLIST
+    blacklist.items = {}
+    self.blacklist = blacklist
+
     local input = CreateFrame('EditBox',nil,self,'InputBoxTemplate')
     input:SetMultiLine(false)
     input:SetAutoFocus(false)
     input:EnableMouse(true)
     input:SetFontObject('ChatFontNormal')
     input:SetSize(173,30)
-    input:SetPoint('CENTER',0,-90)
+    input:SetPoint('TOP',0,-90)
     input:SetScript('OnEnterPressed',Input_OnEnterPressed)
     input:SetScript('OnTextChanged',Input_OnTextChanged)
     input:SetScript('OnEditFocusGained',Input_UpdateTooltip)
@@ -480,7 +494,7 @@ function addon:OnShow()
     input.tooltip = CreateFrame('GameTooltip','KuiSpellListConfigInputHintTooltip',input,'GameTooltipTemplate')
 
     local input_title = self:CreateFontString(nil,'ARTWORK','GameFontNormal')
-    input_title:SetText('Spell ID or name')
+    input_title:SetText('Enter spell ID or name')
     input_title:SetPoint('BOTTOM',input,'TOP')
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
@@ -512,20 +526,6 @@ function addon:OnShow()
     b_exc:SetScript('OnClick',InputButton_OnClick)
     b_exc.env = BTN_LIST_EXC
     self.button_exc = b_exc
-
-    local whitelist = CreateList(self,'Whitelist')
-    whitelist.scroll:SetSize(250,300)
-    whitelist.scroll:SetPoint('TOPLEFT',30,-44)
-    whitelist.list = LIST_WHITELIST
-    whitelist.items = {}
-    self.whitelist = whitelist
-
-    local blacklist = CreateList(self,'Blacklist')
-    blacklist.scroll:SetSize(250,300)
-    blacklist.scroll:SetPoint('TOPRIGHT',-44,-44)
-    blacklist.list = LIST_BLACKLIST
-    blacklist.items = {}
-    self.blacklist = blacklist
 
     self.whitelist:Update()
     self.blacklist:Update()
