@@ -377,11 +377,15 @@ local function Input_UpdateTooltip(self)
             self.tooltip:AddLine('Unknown')
         end
 
-        self.tooltip:AddLine('Enter to insert into whitelist',.5,1,.5)
-        self.tooltip:AddLine('Alt-Enter to insert into blacklist',1,.5,.5)
+        if tonumber(self:GetText()) and not self.output then
+            self.tooltip:AddLine('Cannot track unknown ID',1,.5,.5)
+        else
+            self.tooltip:AddLine('Enter to insert into whitelist',.5,1,.5)
+            self.tooltip:AddLine('Alt-Enter to insert into blacklist',1,.5,.5)
 
-        if self.output then
-            self.tooltip:AddLine('Shift-Enter to track by name',.7,.7,.7)
+            if self.output then
+                self.tooltip:AddLine('Shift-Enter to track by name',.7,.7,.7)
+            end
         end
 
         self.tooltip:Show()
@@ -402,7 +406,12 @@ local function Input_OnTextChanged(self,user)
     if not user then return end
 
     local text = self:GetText()
-    local spell_id = select(7,GetSpellInfo(text))
+
+    local spell_id
+    if not tonumber(text) or tonumber(text) < 1000000000 then
+        -- GetSpellInfo on numbers over this length causes integer overflow
+        spell_id = select(7,GetSpellInfo(text))
+    end
 
     if spell_id then
         -- spell name or id exists in spellbook
@@ -448,6 +457,8 @@ local function InputButton_OnClick(self,button)
 
     addon.whitelist:Update()
     addon.blacklist:Update()
+
+    Input_UpdateTooltip(addon.spell_input)
 end
 function addon:OnShow()
     if addon.shown then return end
@@ -467,6 +478,10 @@ function addon:OnShow()
     self.spell_input = input
 
     input.tooltip = CreateFrame('GameTooltip','KuiSpellListConfigInputHintTooltip',input,'GameTooltipTemplate')
+
+    local input_title = self:CreateFontString(nil,'ARTWORK','GameFontNormal')
+    input_title:SetText('Spell ID or name')
+    input_title:SetPoint('BOTTOM',input,'TOP')
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
     b_own:EnableMouse(true)
