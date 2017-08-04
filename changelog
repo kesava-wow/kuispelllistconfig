@@ -1,8 +1,13 @@
-* update to KuiSpellList-2.0. Filtering style has completely changed and as such the old lists have been deleted.
+* update to KuiSpellList-2.0. Filtering style has completely changed and as
+such the old lists have been deleted.
 * add capability to specify spells to track from any caster
 * add capability to blacklist spells included by the default filter
 
 BETA NOTES
+04-aug
+* clear input when pressing escape
+* add input hint text
+
 30-jul
 * add shift and alt keyboard shortcuts to spell entry
 * add tooltip hint to spell entry editbox
