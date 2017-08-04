@@ -465,14 +465,14 @@ function addon:OnShow()
     addon.shown = true
 
     local whitelist = CreateList(self,'Whitelist')
-    whitelist.scroll:SetSize(250,390)
+    whitelist.scroll:SetSize(250,370)
     whitelist.scroll:SetPoint('TOPLEFT',30,-44)
     whitelist.list = LIST_WHITELIST
     whitelist.items = {}
     self.whitelist = whitelist
 
     local blacklist = CreateList(self,'Blacklist')
-    blacklist.scroll:SetSize(250,390)
+    blacklist.scroll:SetSize(250,370)
     blacklist.scroll:SetPoint('TOPRIGHT',-44,-44)
     blacklist.list = LIST_BLACKLIST
     blacklist.items = {}
@@ -484,7 +484,7 @@ function addon:OnShow()
     input:EnableMouse(true)
     input:SetFontObject('ChatFontNormal')
     input:SetSize(173,30)
-    input:SetPoint('TOP',0,-480)
+    input:SetPoint('TOP',whitelist.bg,'BOTTOM',0,-50)
     input:SetScript('OnEnterPressed',Input_OnEnterPressed)
     input:SetScript('OnTextChanged',Input_OnTextChanged)
     input:SetScript('OnEditFocusGained',Input_UpdateTooltip)
@@ -496,6 +496,14 @@ function addon:OnShow()
     local input_title = self:CreateFontString(nil,'ARTWORK','GameFontNormal')
     input_title:SetText('Enter spell ID or name')
     input_title:SetPoint('BOTTOM',input,'TOP')
+
+    local input_hint = self:CreateFontString('test','ARTWORK','GameFontHighlight')
+    input_hint:SetJustifyH('LEFT')
+    input_hint:SetPoint('TOPLEFT',blacklist.bg,'BOTTOMLEFT',10,0)
+    input_hint:SetPoint('TOPRIGHT',blacklist.bg,'BOTTOMRIGHT',-10,0)
+    input_hint:SetPoint('BOTTOM',0,10)
+    input_hint:SetText([=[Abilities will only be recognised by name if they are present in your currently active set of skills.|n|nYou can use the command |cffffff88/kslc dump|r to find spell IDs of auras once you have applied them to your target.]=])
+    input_hint:SetTextColor(.9,.9,.9)
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
     b_own:EnableMouse(true)
