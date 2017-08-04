@@ -400,10 +400,6 @@ local function Input_OnEnterPressed(self)
         addon.button_own:Click()
     end
 end
-local function Input_OnEscapePressed(self)
-    self:ClearFocus()
-    self:SetText('')
-end
 local function Input_OnTextChanged(self,user)
     self.output = nil
     self:SetTextColor(1,1,1)
@@ -490,7 +486,6 @@ function addon:OnShow()
     input:SetSize(173,30)
     input:SetPoint('TOP',whitelist.bg,'BOTTOM',0,-50)
     input:SetScript('OnEnterPressed',Input_OnEnterPressed)
-    input:SetScript('OnEscapePressed',Input_OnEscapePressed)
     input:SetScript('OnTextChanged',Input_OnTextChanged)
     input:SetScript('OnEditFocusGained',Input_UpdateTooltip)
     input:SetScript('OnEditFocusLost',Input_UpdateTooltip)
@@ -502,7 +497,7 @@ function addon:OnShow()
     input_title:SetText('Enter spell ID or name')
     input_title:SetPoint('BOTTOM',input,'TOP')
 
-    local input_hint = self:CreateFontString(nil,'ARTWORK','GameFontHighlight')
+    local input_hint = self:CreateFontString('test','ARTWORK','GameFontHighlight')
     input_hint:SetJustifyH('LEFT')
     input_hint:SetPoint('TOPLEFT',blacklist.bg,'BOTTOMLEFT',10,0)
     input_hint:SetPoint('TOPRIGHT',blacklist.bg,'BOTTOMRIGHT',-10,0)
