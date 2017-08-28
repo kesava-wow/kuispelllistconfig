@@ -6,7 +6,6 @@
 local folder,ns = ...
 local category = 'Kui |cff9966ffSpell List|r'
 local KSL = LibStub('KuiSpellList-2.0')
-local pcdd = LibStub('SomeoneElsesConfig-Dropdown')
 
 local list_items = {}
 local LIST_WHITELIST,LIST_BLACKLIST = 1,2
