@@ -32,10 +32,11 @@ local function SlashCommand(msg)
         local filter = UnitCanAttack('player','target') and 'HARMFUL' or 'HELPFUL'
         for i=1,40 do
             local aura = { UnitAura('target',i,filter) }
-            if aura[1] and aura[11] then
+            if aura[1] and aura[10] then
                 print(string.format(
-                    'KSLC: [%s] %s',
-                    aura[11], aura[1]
+                    '|cff9966ffKSLC:|r %s[%s] %s',
+                    (aura[14] and "|cffffff88") or (aura[9] and "|cff88ff88") or "",
+                    aura[10], aura[1]
                 ))
             end
         end
