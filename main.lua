@@ -25,7 +25,7 @@ local function SlashCommand(msg)
     if msg == 'dump' then
         -- dump list of auras on target
         if not UnitExists('target') then
-            print('KSLC: run this command with a target to list the auras active on it (debuffs on hostiles, buffs on friends).')
+            print('|cff9966ffKSLC:|r run this command with a target to list the auras active on it (debuffs on hostiles, buffs on friends). Text colours: |cff88ff88In default whitelist|r; |cffffff88In default global whitelist|r.')
             return
         end
 
