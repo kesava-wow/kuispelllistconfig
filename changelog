@@ -1,2 +1,1 @@
-* fix /kslc dump for 80
-* add text colours to dump to indicate auras' status in the default whitelist
+* add indicators for current whitelist/blacklist status to /kslc dump output
