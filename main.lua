@@ -11,7 +11,7 @@ local list_items = {}
 local LIST_WHITELIST,LIST_BLACKLIST = 1,2
 local BTN_LIST_OWN,BTN_LIST_ALL,BTN_LIST_EXC = 1,2,3
 
-local L_INHERIT = '888888[inherit]'
+local L_INHERIT = 'aaaaaainherit'
 local L_OWN = '88ff88own'
 local L_ALL = 'ffff88all'
 local L_NONE = 'ff8888none'
@@ -35,17 +35,20 @@ local function SlashCommand(msg)
         end
 
         local filter = UnitCanAttack('player','target') and 'HARMFUL' or 'HELPFUL'
+        local KSL_ALL,KSL_OWN,KSL_NONE
         for i=1,40 do
             local aura = { UnitAura('target',i,filter) }
             if aura[1] and aura[10] then
+                KSL_ALL = KSL:SpellIncludedAll(aura[10]) or KSL:SpellIncludedAll(strlower(aura[1]))
+                KSL_OWN = KSL:SpellIncludedOwn(aura[10]) or KSL:SpellIncludedOwn(strlower(aura[1]))
+                KSL_NONE = KSL:SpellExcluded(aura[10]) or KSL:SpellExcluded(strlower(aura[1]))
+
                 print(string.format(
                     '|cff9966ffKSLC:|r [%s] %s | Default: |cff%s|r | KSLC: |cff%s|r',
                     aura[10], aura[1],
                     (aura[14] and L_ALL) or (aura[9] and L_OWN) or L_NONE,
-                    (KSL:SpellIncludedAll(aura[10]) and L_ALL) or
-                        (KSL:SpellIncludedOwn(aura[10]) and L_OWN) or
-                        (KSL:SpellExcluded(aura[10]) and L_NONE) or
-                        L_INHERIT
+                    (KSL_ALL and L_ALL) or (KSL_OWN and L_OWN) or
+                        (KSL_NONE and L_NONE) or L_INHERIT
                 ))
             end
         end
