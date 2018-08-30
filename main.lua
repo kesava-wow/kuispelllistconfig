@@ -11,6 +11,11 @@ local list_items = {}
 local LIST_WHITELIST,LIST_BLACKLIST = 1,2
 local BTN_LIST_OWN,BTN_LIST_ALL,BTN_LIST_EXC = 1,2,3
 
+local L_INHERIT = '888888[inherit]'
+local L_OWN = '88ff88own'
+local L_ALL = 'ffff88all'
+local L_NONE = 'ff8888none'
+
 local addon = CreateFrame('Frame', 'KuiSpellListConfig', InterfaceOptionsFramePanelContainer)
 addon:Hide()
 addon.name = category
@@ -25,7 +30,7 @@ local function SlashCommand(msg)
     if msg == 'dump' then
         -- dump list of auras on target
         if not UnitExists('target') then
-            print('|cff9966ffKSLC:|r run this command with a target to list the auras active on it (debuffs on hostiles, buffs on friends). Text colours: |cff88ff88In default whitelist|r; |cffffff88In default global whitelist|r.')
+            print('|cff9966ffKSLC:|r run this command with a target to list the auras active on it (debuffs on hostiles, buffs on friends).')
             return
         end
 
@@ -34,9 +39,13 @@ local function SlashCommand(msg)
             local aura = { UnitAura('target',i,filter) }
             if aura[1] and aura[10] then
                 print(string.format(
-                    '|cff9966ffKSLC:|r %s[%s] %s',
-                    (aura[14] and "|cffffff88") or (aura[9] and "|cff88ff88") or "",
-                    aura[10], aura[1]
+                    '|cff9966ffKSLC:|r [%s] %s | Default: |cff%s|r | KSLC: |cff%s|r',
+                    aura[10], aura[1],
+                    (aura[14] and L_ALL) or (aura[9] and L_OWN) or L_NONE,
+                    (KSL:SpellIncludedAll(aura[10]) and L_ALL) or
+                        (KSL:SpellIncludedOwn(aura[10]) and L_OWN) or
+                        (KSL:SpellExcluded(aura[10]) and L_NONE) or
+                        L_INHERIT
                 ))
             end
         end
