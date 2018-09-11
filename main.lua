@@ -410,7 +410,7 @@ local function Input_UpdateTooltip(self)
             self.tooltip:AddLine('Alt-Enter to insert into blacklist',1,.5,.5)
 
             if self.output then
-                self.tooltip:AddLine('Shift-Enter to track by name',.7,.7,.7)
+                self.tooltip:AddLine('Shift-Enter to insert name',.7,.7,.7)
             end
         end
 
@@ -533,7 +533,7 @@ function addon:OnShow()
     input_hint:SetPoint('TOPLEFT',blacklist.bg,'BOTTOMLEFT',10,0)
     input_hint:SetPoint('TOPRIGHT',blacklist.bg,'BOTTOMRIGHT',-10,0)
     input_hint:SetPoint('BOTTOM',0,10)
-    input_hint:SetText([=[Abilities will only be recognised by name if they are present in your currently active set of skills.|n|nYou can use the command |cffffff88/kslc dump|r to find spell IDs of auras once you have applied them to your target.]=])
+    input_hint:SetText([=[KSL tracks auras by name or spell ID. Use the command |cffffff88/kslc dump|r to list the spell IDs of auras on a target.|n|nAbility names will be converted to spell IDs if they are in your spellbook.]=])
     input_hint:SetTextColor(.9,.9,.9)
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
