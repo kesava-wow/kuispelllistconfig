@@ -27,14 +27,28 @@ addon:RegisterEvent('ADDON_LOADED')
 
 -- local functions #############################################################
 local function SlashCommand(msg)
-    if msg == 'dump' then
+    if msg == 'dump' or strfind(msg,'^dump') then
         -- dump list of auras on target
         if not UnitExists('target') then
-            print('|cff9966ffKSLC:|r run this command with a target to list the auras active on it (debuffs on hostiles, buffs on friends).')
+            print('|cff9966ffKSLC|r List auras active on the target (debuffs on enemies, buffs on friends).')
+            print('    List buffs: /kslc dump buffs')
+            print('    List debuffs: /kslc dump debuffs')
             return
         end
 
-        local filter = UnitCanAttack('player','target') and 'HARMFUL' or 'HELPFUL'
+        local aura_filter
+        local arg1 = strmatch(msg,'^dump%s+(.-)%s*$')
+        if arg1 then
+            if arb1 == 'b' or arg1 == 'buffs' then
+                aura_filter = 'HELPFUL'
+            elseif arb1 == 'd' or arg1 == 'debuffs' then
+                aura_filter = 'HARMFUL'
+            end
+        end
+        if not aura_filter then
+            aura_filter = UnitCanAttack('player','target') and 'HARMFUL' or 'HELPFUL'
+        end
+
         local KSL_ALL,KSL_OWN,KSL_NONE
         for i=1,40 do
             local aura = { UnitAura('target',i,filter) }
