@@ -439,18 +439,9 @@ local function Input_OnTextChanged(self,user)
 
     local spell_id
     if not tonumber(text) or tonumber(text) < 1000000000 then
-        -- GetSpellInfo on numbers over this length causes integer overflow
         spell_id = select(7,GetSpellInfo(text))
     end
-
-    if spell_id then
-        -- spell name or id exists in spellbook
-        self:SetTextColor(0,1,0)
-        self.output = spell_id
-    else
-        -- unrecognised text
-        self:SetTextColor(1,0,0)
-    end
+    self.output = spell_id
 
     Input_UpdateTooltip(self)
 end
