@@ -30,7 +30,7 @@ local function SlashCommand(msg)
     if msg == 'dump' or strfind(msg,'^dump') then
         -- dump list of auras on target
         if not UnitExists('target') then
-            print('|cff9966ffKSLC|r List auras active on the target (debuffs on enemies, buffs on friends).')
+            print('|cff9966ffKSLC|r List auras active on the target.')
             print('    List buffs: /kslc dump buffs')
             print('    List debuffs: /kslc dump debuffs')
             return
