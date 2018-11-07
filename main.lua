@@ -524,7 +524,7 @@ function addon:OnShow()
     input_hint:SetPoint('TOPLEFT',blacklist.bg,'BOTTOMLEFT',10,0)
     input_hint:SetPoint('TOPRIGHT',blacklist.bg,'BOTTOMRIGHT',-10,0)
     input_hint:SetPoint('BOTTOM',0,10)
-    input_hint:SetText([=[KSL tracks auras by name or spell ID. Use the command |cffffff88/kslc dump|r to list the spell IDs of auras on a target.|n|nAbility names will be converted to spell IDs if they are in your spellbook.]=])
+    input_hint:SetText([=[KSL tracks auras by name or spell ID. Use the command |cffffff88/kslc dump|r to list the spell IDs of your auras on a target.|n|nAbility names will be converted to spell IDs if they are in your spellbook.]=])
     input_hint:SetTextColor(.9,.9,.9)
 
     local b_own = CreateFrame('Button',nil,self,'UIPanelButtonTemplate')
