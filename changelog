@@ -1,1 +1,3 @@
-* add indicators for current whitelist/blacklist status to /kslc dump output
+* add optional buffs/debuffs argument to /kslc dump
+* disable colouring the entry text
+* locale changes
