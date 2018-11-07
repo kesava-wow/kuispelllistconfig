@@ -39,9 +39,9 @@ local function SlashCommand(msg)
         local aura_filter
         local arg1 = strmatch(msg,'^dump%s+(.-)%s*$')
         if arg1 then
-            if arb1 == 'b' or arg1 == 'buffs' then
+            if arg1 == 'b' or arg1 == 'buffs' then
                 aura_filter = 'HELPFUL'
-            elseif arb1 == 'd' or arg1 == 'debuffs' then
+            elseif arg1 == 'd' or arg1 == 'debuffs' then
                 aura_filter = 'HARMFUL'
             end
         end
@@ -51,7 +51,7 @@ local function SlashCommand(msg)
 
         local KSL_ALL,KSL_OWN,KSL_NONE
         for i=1,40 do
-            local aura = { UnitAura('target',i,filter) }
+            local aura = { UnitAura('target',i,aura_filter) }
             if aura[1] and aura[10] then
                 KSL_ALL = KSL:SpellIncludedAll(aura[10]) or KSL:SpellIncludedAll(strlower(aura[1]))
                 KSL_OWN = KSL:SpellIncludedOwn(aura[10]) or KSL:SpellIncludedOwn(strlower(aura[1]))
