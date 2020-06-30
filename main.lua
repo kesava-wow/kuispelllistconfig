@@ -370,7 +370,7 @@ do
         title:SetPoint('BOTTOM',bg,'TOP',0,3)
 
         local empty_text = bg:CreateFontString(nil,'ARTWORK','GameFontHighlight')
-        empty_text:SetText('No items')
+        empty_text:SetText('Nothing')
         empty_text:SetAlpha(.5)
         empty_text:SetPoint('CENTER')
         empty_text:Hide()
