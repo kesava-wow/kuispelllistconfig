@@ -138,7 +138,7 @@ do
         end
 
         if not f then
-            f = CreateFrame('Button',nil,addon)
+            f = CreateFrame('Button',nil,addon,BackdropTemplateMixin and 'BackdropTemplate' or nil)
             f:SetWidth(250)
             f:EnableMouse(true)
             f:RegisterForClicks('AnyUp')
@@ -353,7 +353,7 @@ do
         local scroll = CreateFrame('ScrollFrame',nil,parent,'UIPanelScrollFrameTemplate')
         scroll:SetScrollChild(l)
 
-        local bg = CreateFrame('Frame',nil,parent)
+        local bg = CreateFrame('Frame',nil,parent,BackdropTemplateMixin and 'BackdropTemplate' or nil)
         bg:SetBackdrop({
             bgFile = 'interface/chatframe/ChatFrameBackground',
             edgeFile = 'interface/tooltips/ui-tooltip-border',
