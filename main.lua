@@ -3,7 +3,8 @@
 -- By Kesava at curse.com
 -- All rights reserved
 ]]
-local folder,ns = ...
+--luacheck:globals KuiSpellListConfigSaved
+local folder = ...
 local category = 'Kui |cff9966ffSpell List|r'
 local KSL = LibStub('KuiSpellList-2.0')
 
@@ -130,7 +131,7 @@ do
     end
     local function CreateListItem(parent)
         local f
-        for k,v in ipairs(list_items) do
+        for _,v in ipairs(list_items) do
             if v and not v:IsShown() then
                 f = v
                 break
@@ -271,7 +272,7 @@ do
         return strlower(a) < strlower(b)
     end
     local function List_Wipe(self)
-        for k,v in ipairs(self.items) do
+        for _,v in ipairs(self.items) do
             v:Hide()
         end
         wipe(self.items)
@@ -279,7 +280,7 @@ do
     local function List_ParseList(self,list)
         local list_sorted = {}
 
-        for k,v in pairs(list) do
+        for k,_ in pairs(list) do
             local id,name
             id = tonumber(k)
             name = id and GetSpellInfo(id)
@@ -295,7 +296,7 @@ do
 
         table.sort(list_sorted,ListSort)
 
-        for k,v in ipairs(list_sorted) do
+        for _,v in ipairs(list_sorted) do
             if type(v) == 'table' then
                 self:InsertItem(v[1])
             else
@@ -445,7 +446,7 @@ local function Input_OnTextChanged(self,user)
 
     Input_UpdateTooltip(self)
 end
-local function InputButton_OnClick(self,button)
+local function InputButton_OnClick(self,_)
     local spell = addon.spell_input.output
     if not spell or IsShiftKeyDown() then
         -- track text verbatim
@@ -569,6 +570,7 @@ function addon:ADDON_LOADED(loaded)
 
     InterfaceOptions_AddCategory(self)
 
+    --luacheck:globals SLASH_KUISPELLLIST1 SLASH_KUISPELLLIST2
     SLASH_KUISPELLLIST1 = '/kuislc'
     SLASH_KUISPELLLIST2 = '/kslc'
     SlashCmdList.KUISPELLLIST = SlashCommand
@@ -592,3 +594,4 @@ function addon:ADDON_LOADED(loaded)
         KSL:Import(KuiSpellListConfigSaved.exclude)
     end
 end
+
