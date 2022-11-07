@@ -17,7 +17,7 @@ local L_OWN = '88ff88own'
 local L_ALL = 'ffff88all'
 local L_NONE = 'ff8888none'
 
-local addon = CreateFrame('Frame', 'KuiSpellListConfig', InterfaceOptionsFramePanelContainer)
+local addon = CreateFrame('Frame', 'KuiSpellListConfig', SettingsPanel.Container)
 addon:Hide()
 addon.name = category
 
