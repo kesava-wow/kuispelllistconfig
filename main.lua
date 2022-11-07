@@ -166,14 +166,14 @@ do
 
             local name = f:CreateFontString(nil,'ARTWORK')
             name:SetFontObject('GameFontNormal')
-            name:SetWordWrap()
+            name:SetWordWrap(false)
             name:SetSize(200,18)
             name:SetPoint('TOPLEFT',icon,'TOPRIGHT',5,1)
             name:SetJustifyH('LEFT')
 
             local spellid = f:CreateFontString(nil,'ARTWORK')
             spellid:SetFontObject('GameFontNormalSmall')
-            spellid:SetWordWrap()
+            spellid:SetWordWrap(false)
             spellid:SetTextColor(.5,.5,.5)
             spellid:SetSize(200,18)
             spellid:SetPoint('BOTTOMLEFT',icon,'BOTTOMRIGHT',5,-1)
@@ -185,7 +185,7 @@ do
             btn_all.parent = f
 
             local btn_all_label = btn_all:CreateFontString(nil,'ARTWORK','GameFontHighlightSmall')
-            btn_all_label:SetWordWrap()
+            btn_all_label:SetWordWrap(false)
             btn_all_label:SetAlpha(.7)
             btn_all_label:SetText('All')
             btn_all_label:SetPoint('RIGHT',btn_all,'LEFT')
