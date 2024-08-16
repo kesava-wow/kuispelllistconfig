@@ -26,6 +26,49 @@ addon:SetScript('OnEvent',function(self,event,...)
 end)
 addon:RegisterEvent('ADDON_LOADED')
 
+-- API version compatibility
+local GetSpellName = C_Spell and C_Spell.GetSpellName or GetSpellInfo
+
+local GetSpellInfo
+if C_Spell and C_Spell.GetSpellInfo then
+    GetSpellInfo = function(id_or_name)
+        local spell = C_Spell.GetSpellInfo(id_or_name)
+        if spell then
+            spell.link = C_Spell.GetSpellLink(spell.spellID)
+        end
+        return spell or {}
+    end
+else
+    GetSpellInfo = function(id_or_name)
+        local spell, _ = {}
+        spell.name, _, spell.iconID, _, _, _, spell.spellID = _G.GetSpellInfo(id_or_name)
+        if spell.spellID then
+            spell.link = GetSpellLink(spell.spellID)
+        end
+        return spell
+    end
+end
+
+local UnitAura = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+if not UnitAura then
+    UnitAura = function(...)
+        local aura, _ = {}
+        aura.name, _, _, _, _, _, _, _, aura.nameplateShowPersonal, aura.spellID, _, _, _, aura.isFromPlayerOrPlayerPet = UnitAura(...)
+        return aura
+    end
+end
+
+local InterfaceOptions_AddCategory = InterfaceOptions_AddCategory
+if Settings and Settings.RegisterCanvasLayoutCategory then
+    InterfaceOptions_AddCategory = function(section)
+        local panel = Settings.RegisterCanvasLayoutCategory(section, section.name)
+        panel.ID = section.name
+        Settings.RegisterAddOnCategory(panel)
+    end
+end
+
+local InterfaceOptionsFrame_OpenToCategory = Settings and Settings.OpenToCategory or InterfaceOptionsFrame_OpenToCategory
+
 -- local functions #############################################################
 local function SlashCommand(msg)
     if msg == 'dump' or strfind(msg,'^dump') then
@@ -52,23 +95,23 @@ local function SlashCommand(msg)
 
         local KSL_ALL,KSL_OWN,KSL_NONE
         for i=1,40 do
-            local aura = { UnitAura('target',i,aura_filter) }
-            if aura[1] and aura[10] then
-                KSL_ALL = KSL:SpellIncludedAll(aura[10]) or KSL:SpellIncludedAll(strlower(aura[1]))
-                KSL_OWN = KSL:SpellIncludedOwn(aura[10]) or KSL:SpellIncludedOwn(strlower(aura[1]))
-                KSL_NONE = KSL:SpellExcluded(aura[10]) or KSL:SpellExcluded(strlower(aura[1]))
+            local aura = UnitAura('target',i,aura_filter)
+            if aura and aura.name and aura.spellId then
+                KSL_ALL = KSL:SpellIncludedAll(aura.spellId) or KSL:SpellIncludedAll(strlower(aura.name))
+                KSL_OWN = KSL:SpellIncludedOwn(aura.spellId) or KSL:SpellIncludedOwn(strlower(aura.name))
+                KSL_NONE = KSL:SpellExcluded(aura.spellId) or KSL:SpellExcluded(strlower(aura.name))
 
                 print(string.format(
                     '|cff9966ffKSLC:|r [%s] %s | Default: |cff%s|r | KSLC: |cff%s|r',
-                    aura[10], aura[1],
-                    (aura[14] and L_ALL) or (aura[9] and L_OWN) or L_NONE,
+                    aura.spellId, aura.name,
+                    (aura.isFromPlayerOrPlayerPet and L_ALL) or
+                        (aura.nameplateShowPersonal and L_OWN) or L_NONE,
                     (KSL_ALL and L_ALL) or (KSL_OWN and L_OWN) or
                         (KSL_NONE and L_NONE) or L_INHERIT
                 ))
             end
         end
     else
-        InterfaceOptionsFrame_OpenToCategory(category)
         InterfaceOptionsFrame_OpenToCategory(category)
     end
 end
@@ -230,31 +273,19 @@ do
         local f = CreateListItem(parent)
         f.env = id_or_name
 
-        local spell_id   = tonumber(id_or_name)
-        local spell_name = spell_id and GetSpellInfo(spell_id)
-        local spell_icon = spell_id and select(3,GetSpellInfo(spell_id))
-        f.spell_link     = spell_id and GetSpellLink(spell_id)
-
-        if not spell_id or not spell_name then
-            -- unknown spell id
-            spell_id = nil
-            spell_name = id_or_name
-
+        local spell = GetSpellInfo(id_or_name)
+        if type(id_or_name) == 'string' or not spell.spellID then
+            -- spell added by name or unknown spell id
             f:SetHeight(30)
             f.icon:SetSize(20,20)
+            f.name:SetText(id_or_name)
         else
             f:SetHeight(40)
             f.icon:SetSize(30,30)
-        end
-
-        if spell_name then
-            f.name:SetText(spell_name)
-        end
-        if spell_id then
-            f.spellid:SetText(spell_id)
-        end
-        if spell_icon then
-            f.icon:SetTexture(spell_icon)
+            f.name:SetText(spell.name)
+            f.spellid:SetText(spell.spellID)
+            f.icon:SetTexture(spell.iconID)
+            f.spell_link = spell.link
         end
 
         if parent.list == LIST_WHITELIST then
@@ -283,7 +314,7 @@ do
         for k,_ in pairs(list) do
             local id,name
             id = tonumber(k)
-            name = id and GetSpellInfo(id)
+            name = id and GetSpellName(id)
 
             if id and name then
                 -- spell id and name
@@ -396,9 +427,9 @@ local function Input_UpdateTooltip(self)
         self.tooltip:SetOwner(self,'ANCHOR_NONE')
         self.tooltip:SetPoint('LEFT',self,'RIGHT',5,0)
 
-        if self.output and GetSpellLink(self.output) then
+        if self.output and self.output.link then
             -- show matched spell
-            self.tooltip:SetHyperlink(GetSpellLink(self.output))
+            self.tooltip:SetHyperlink(self.output.link)
             self.tooltip:AddLine('|n')
         else
             self.tooltip:AddLine('Unknown')
@@ -409,10 +440,7 @@ local function Input_UpdateTooltip(self)
         else
             self.tooltip:AddLine('Enter to insert into whitelist',.5,1,.5)
             self.tooltip:AddLine('Alt-Enter to insert into blacklist',1,.5,.5)
-
-            if self.output then
-                self.tooltip:AddLine('Shift-Enter to insert name',.7,.7,.7)
-            end
+            self.tooltip:AddLine('Shift-Enter to insert name',.7,.7,.7)
         end
 
         self.tooltip:Show()
@@ -436,13 +464,10 @@ local function Input_OnTextChanged(self,user)
     self:SetTextColor(1,1,1)
     if not user then return end
 
-    local text = self:GetText()
-
-    local spell_id
-    if not tonumber(text) or tonumber(text) < 1000000000 then
-        spell_id = select(7,GetSpellInfo(text))
+    local spell = GetSpellInfo(self:GetText())
+    if spell.spellID then
+        self.output = spell
     end
-    self.output = spell_id
 
     Input_UpdateTooltip(self)
 end
@@ -451,20 +476,11 @@ local function InputButton_OnClick(self,_)
     if not spell or IsShiftKeyDown() then
         -- track text verbatim
         spell = strlower(addon.spell_input:GetText())
-        if tonumber(spell) then
-            if addon.spell_input.output then
-                -- convert to name
-                spell = GetSpellInfo(spell)
-                spell = spell and strlower(spell) or nil
-            else
-                -- unrecognised spell id; doesn't make sense to insert
-                return
-            end
-        end
+    else
+        spell = spell.spellID
     end
 
-    if not spell or spell == '' then return end
-    spell = tonumber(spell) or spell
+    if spell == '' then return end
 
     addon.spell_input:SetText('')
     addon.spell_input:SetFocus()

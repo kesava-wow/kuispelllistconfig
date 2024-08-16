@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 110002
 ## Author: Kesava
 ## Title: Kui |cff9966ffSpellList Config|r
 ## Notes: Customise the aura filter used by Kui Nameplates
